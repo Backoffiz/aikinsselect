@@ -1,0 +1,13 @@
+{
+  "name": "aikinsselect",
+  "compatibility_date": "2024-09-23",
+  "compatibility_flags": ["nodejs_compat"],
+  "pages_build_output_dir": ".vercel/output/static",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "aikinsselect-db",
+      "database_id": "5df12367-0bd2-4568-9437-0090a640c47e"
+    }
+  ]
+}

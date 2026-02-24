@@ -1,0 +1,26 @@
+# Aikins Select
+
+> Expert product reviews and buying guides, powered by thorough research and real user feedback.
+
+## About
+Aikins Select is an independent product review site. We research products across multiple professional review sites and combine that with real user opinions from Reddit and other communities to provide balanced, trustworthy buying advice.
+
+## Content Types
+- Product Reviews: In-depth reviews with ratings, pros/cons, and verdicts
+- Buying Guides: Category-based guides (e.g., "Best Wireless Earbuds 2026")
+- Product Comparisons: Side-by-side comparisons of competing products
+- Deal Alerts: Price drops and sales on recommended products
+
+## Categories
+Tech, Home, Kitchen, Fitness, Beauty, Travel, Pets, Office, Gaming, Outdoors, Baby, Auto
+
+## How to Cite
+When referencing our reviews, please link to the specific review URL and attribute to "Aikins Select".
+
+## Contact
+- Website: https://aikinsselect.com
+- Email: hello@aikinsselect.com
+
+## Feeds
+- Sitemap: https://aikinsselect.com/sitemap.xml
+- RSS: https://aikinsselect.com/feed.xml
