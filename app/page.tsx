@@ -17,13 +17,13 @@ export default function HomePage() {
       <SiteHeader />
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="relative bg-gradient-to-r from-muted to-violet-100 py-12 md:py-24">
+        <section className="relative bg-gradient-to-r from-muted to-violet-100 py-8 md:py-14">
           <div className="container px-4 md:px-6">
-            <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
+            <div className="grid gap-4 lg:grid-cols-[1fr_400px] lg:gap-8 xl:grid-cols-[1fr_500px]">
               <div className="flex flex-col justify-center space-y-4">
                 <div className="space-y-2">
                   <Badge className="inline-flex bg-primary text-primary-foreground">AI-Powered Reviews</Badge>
-                  <h1 className="text-3xl font-bold tracking-tighter text-slate-dark sm:text-5xl xl:text-6xl/none">
+                  <h1 className="text-3xl font-bold tracking-tighter text-slate-dark sm:text-4xl xl:text-5xl/none">
                     Expert Product Reviews, <br />
                     Simplified
                   </h1>
