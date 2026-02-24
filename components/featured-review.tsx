@@ -7,45 +7,44 @@ import { ExternalLink, Star } from "lucide-react"
 
 export function FeaturedReview() {
   return (
-    <Card className="overflow-hidden">
-      <div className="relative">
+    <Card className="overflow-hidden max-h-[360px]">
+      <div className="relative h-[160px] overflow-hidden">
         <Image
-          src="/placeholder.svg?height=300&width=600"
+          src="/placeholder.svg?height=160&width=500"
           alt="Featured Review"
-          width={600}
-          height={300}
-          className="object-cover"
+          width={500}
+          height={160}
+          className="object-cover w-full h-full"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-        <div className="absolute bottom-4 left-4">
-          <Badge className="bg-primary text-primary-foreground">Featured</Badge>
+        <div className="absolute bottom-3 left-3">
+          <Badge className="bg-primary text-primary-foreground text-xs">Featured</Badge>
         </div>
       </div>
-      <CardContent className="p-4">
-        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+      <CardContent className="p-3">
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <span>Tech</span>
           <span>•</span>
           <span>Headphones</span>
         </div>
-        <h3 className="mt-2 text-xl font-bold">The 7 Best Wireless Earbuds for Every Budget (2023)</h3>
-        <div className="mt-2 flex items-center">
+        <h3 className="mt-1 text-base font-bold leading-tight">The 7 Best Wireless Earbuds for Every Budget</h3>
+        <div className="mt-1.5 flex items-center">
           <div className="flex">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className={`h-4 w-4 ${i < 4 ? "fill-primary text-primary" : "fill-muted text-muted"}`} />
+              <Star key={i} className={`h-3.5 w-3.5 ${i < 4 ? "fill-primary text-primary" : "fill-muted text-muted"}`} />
             ))}
           </div>
-          <span className="ml-2 text-sm text-muted-foreground">Based on 24 products tested</span>
+          <span className="ml-2 text-xs text-muted-foreground">24 products tested</span>
         </div>
       </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Button asChild className="w-full gap-1">
+      <CardFooter className="p-3 pt-0">
+        <Button asChild size="sm" className="w-full gap-1">
           <Link href="/reviews/best-wireless-earbuds-2023">
             Read Review
-            <ExternalLink className="h-4 w-4" />
+            <ExternalLink className="h-3.5 w-3.5" />
           </Link>
         </Button>
       </CardFooter>
     </Card>
   )
 }
-
