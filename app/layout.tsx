@@ -18,6 +18,13 @@ export const metadata: Metadata = {
     siteName: 'Aikins Select',
     locale: 'en_US',
     type: 'website',
+    images: [{ url: '/og-image.jpg', width: 1200, height: 630, alt: 'Aikins Select - Expert Product Reviews' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Aikins Select — Expert Product Reviews',
+    description: 'We cross-reference Wirecutter, RTINGS, and Reddit to find the products that actually deliver.',
+    images: ['/og-image.jpg'],
   },
   robots: {
     index: true,
