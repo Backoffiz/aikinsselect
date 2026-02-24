@@ -15,7 +15,6 @@ export function FeaturedReview() {
           fill
           className="object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
         <div className="absolute bottom-3 left-3">
           <Badge className="bg-primary text-primary-foreground text-xs">Featured</Badge>
         </div>
