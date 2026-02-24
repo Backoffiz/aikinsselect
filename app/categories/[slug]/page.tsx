@@ -1,6 +1,7 @@
 export const runtime = 'edge'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { getCategoryBySlug, getProductsByCategory, getReviewsByCategory } from '@/lib/db'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -47,11 +48,21 @@ export default async function CategoryPage({ params }: Props) {
           <span className="text-slate-900 font-medium">{category.name}</span>
         </nav>
 
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Best {category.name} Products</h1>
-          <p className="text-slate-600 mt-2">
-            {products.length} products reviewed • {bestPicks.length} editor&apos;s picks
-          </p>
+        {/* Category Hero */}
+        <div className="relative rounded-xl overflow-hidden mb-8 h-48 md:h-64">
+          <Image
+            src={`/categories/${slug}.jpg`}
+            alt={category.name}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 p-6">
+            <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-sm">Best {category.name} Products</h1>
+            <p className="text-white/80 mt-1">
+              {products.length} products reviewed • {bestPicks.length} editor&apos;s picks
+            </p>
+          </div>
         </div>
 
         {/* Reviews for this category */}

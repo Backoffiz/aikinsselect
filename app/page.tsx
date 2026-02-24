@@ -1,6 +1,7 @@
 export const runtime = 'edge'
 
 import Link from "next/link"
+import Image from "next/image"
 import { SearchBar } from "@/components/search-bar"
 import { FeaturedReview } from "@/components/featured-review"
 import { CategoryCard } from "@/components/category-card"
@@ -160,9 +161,14 @@ export default async function HomePage() {
                     <span className="sr-only">View Review</span>
                   </Link>
                   <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-violet-100 to-purple-50">
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-5xl">📝</span>
-                    </div>
+                    {review.category_slug && (
+                      <Image
+                        src={`/categories/${review.category_slug}.jpg`}
+                        alt={review.title}
+                        fill
+                        className="object-cover transition-transform group-hover:scale-105"
+                      />
+                    )}
                     <div className="absolute bottom-3 left-3 flex items-center gap-2">
                       <Badge variant="secondary" className="bg-white/80 text-slate-dark backdrop-blur-sm text-xs">
                         <Clock className="mr-1 h-3 w-3" />

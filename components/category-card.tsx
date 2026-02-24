@@ -1,18 +1,5 @@
 import Link from "next/link"
-import {
-  Laptop,
-  Home,
-  Utensils,
-  Dumbbell,
-  Sparkles,
-  Plane,
-  PawPrintIcon as Paw,
-  Briefcase,
-  Gamepad,
-  Mountain,
-  Baby,
-  Car,
-} from "lucide-react"
+import Image from "next/image"
 
 interface CategoryCardProps {
   title: string
@@ -21,48 +8,26 @@ interface CategoryCardProps {
 }
 
 export function CategoryCard({ title, icon, count }: CategoryCardProps) {
-  const getIcon = () => {
-    switch (icon) {
-      case "laptop":
-        return <Laptop className="h-6 w-6" />
-      case "home":
-        return <Home className="h-6 w-6" />
-      case "utensils":
-        return <Utensils className="h-6 w-6" />
-      case "dumbbell":
-        return <Dumbbell className="h-6 w-6" />
-      case "sparkles":
-        return <Sparkles className="h-6 w-6" />
-      case "plane":
-        return <Plane className="h-6 w-6" />
-      case "paw":
-        return <Paw className="h-6 w-6" />
-      case "briefcase":
-        return <Briefcase className="h-6 w-6" />
-      case "gamepad":
-        return <Gamepad className="h-6 w-6" />
-      case "mountain":
-        return <Mountain className="h-6 w-6" />
-      case "baby":
-        return <Baby className="h-6 w-6" />
-      case "car":
-        return <Car className="h-6 w-6" />
-      default:
-        return <Laptop className="h-6 w-6" />
-    }
-  }
+  const slug = title.toLowerCase()
 
   return (
     <Link
-      href={`/categories/${title.toLowerCase()}`}
-      className="flex flex-col items-center justify-center rounded-lg border bg-white p-4 text-center transition-colors hover:bg-muted"
+      href={`/categories/${slug}`}
+      className="group relative overflow-hidden rounded-lg border bg-white transition-all hover:shadow-md"
     >
-      <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-        {getIcon()}
+      <div className="relative aspect-square overflow-hidden">
+        <Image
+          src={`/categories/${slug}.jpg`}
+          alt={title}
+          fill
+          className="object-cover transition-transform group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
+          <h3 className="text-sm font-bold text-white drop-shadow-sm">{title}</h3>
+          <p className="text-xs text-white/80">{count} products</p>
+        </div>
       </div>
-      <h3 className="text-sm font-medium text-slate-dark">{title}</h3>
-      <p className="text-xs text-muted-foreground">{count} reviews</p>
     </Link>
   )
 }
-

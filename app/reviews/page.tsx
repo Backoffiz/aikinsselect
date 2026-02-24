@@ -1,6 +1,7 @@
 export const runtime = 'edge'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { getPublishedReviews } from '@/lib/db'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
@@ -35,8 +36,19 @@ export default async function ReviewsPage() {
                 href={`/reviews/${review.slug}`}
                 className="group block rounded-lg border border-slate-200 bg-white overflow-hidden transition-all hover:shadow-lg hover:border-violet-200"
               >
-                <div className="aspect-video bg-gradient-to-br from-violet-100 to-purple-50 flex items-center justify-center">
-                  <span className="text-4xl">📝</span>
+                <div className="aspect-video bg-gradient-to-br from-violet-100 to-purple-50 relative overflow-hidden">
+                  {review.category_slug ? (
+                    <Image
+                      src={`/categories/${review.category_slug}.jpg`}
+                      alt={review.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform"
+                    />
+                  ) : (
+                    <div className="flex items-center justify-center h-full">
+                      <span className="text-4xl">📝</span>
+                    </div>
+                  )}
                 </div>
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-2">

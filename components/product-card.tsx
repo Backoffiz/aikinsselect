@@ -1,77 +1,77 @@
-import Image from "next/image"
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Award, ExternalLink, Star } from "lucide-react"
+import { Award, Star } from "lucide-react"
 
 interface ProductCardProps {
   title: string
   category: string
-  image: string
+  image?: string
   rating: number
-  reviewCount: number
+  reviewCount?: number
   price: string
   bestPick?: boolean
+  categorySlug?: string
 }
 
 export function ProductCard({
   title,
   category,
-  image,
   rating,
   reviewCount,
   price,
   bestPick = false,
+  categorySlug,
 }: ProductCardProps) {
+  // Color mapping for category backgrounds
+  const categoryColors: Record<string, string> = {
+    Tech: "from-violet-500 to-indigo-600",
+    Home: "from-emerald-500 to-teal-600",
+    Kitchen: "from-orange-500 to-red-500",
+    Gaming: "from-purple-600 to-pink-600",
+    Fitness: "from-green-500 to-lime-600",
+    Beauty: "from-pink-400 to-rose-500",
+    Travel: "from-sky-500 to-blue-600",
+    Pets: "from-amber-500 to-yellow-600",
+    Office: "from-slate-500 to-gray-600",
+    Outdoors: "from-green-600 to-emerald-700",
+    Baby: "from-blue-300 to-indigo-400",
+    Auto: "from-gray-600 to-slate-700",
+  }
+
+  const gradient = categoryColors[category] || "from-violet-500 to-indigo-600"
+
   return (
-    <div className="group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-all hover:shadow-violet-md">
-      <Link href="#" className="absolute inset-0 z-10">
-        <span className="sr-only">View Product</span>
-      </Link>
-      <div className="relative aspect-square overflow-hidden">
+    <div className="group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-all hover:shadow-lg">
+      <div className={`relative h-40 bg-gradient-to-br ${gradient} flex items-center justify-center p-4`}>
         {bestPick && (
           <div className="absolute top-2 left-2 z-20">
-            <Badge className="gap-1 bg-accent text-accent-foreground">
-              <Award className="h-3.5 w-3.5" />
+            <Badge className="gap-1 bg-amber-400 text-amber-900 text-xs font-bold">
+              <Award className="h-3 w-3" />
               Best Pick
             </Badge>
           </div>
         )}
-        <Image
-          src={image || "/placeholder.svg"}
-          alt={title}
-          width={300}
-          height={300}
-          className="h-full w-full object-cover transition-transform group-hover:scale-105"
-        />
+        <h3 className="text-lg font-bold text-white text-center drop-shadow-sm leading-tight">
+          {title}
+        </h3>
       </div>
       <div className="p-4">
-        <div className="text-sm text-slate-400">{category}</div>
-        <h3 className="mt-1 font-semibold text-slate-dark">{title}</h3>
+        <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">{category}</div>
         <div className="mt-2 flex items-center">
           <div className="flex">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`h-4 w-4 ${i < Math.floor(rating) ? "fill-primary text-primary" : "fill-slate-200 text-slate-200"}`}
+                className={`h-3.5 w-3.5 ${i < Math.floor(rating) ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200"}`}
               />
             ))}
           </div>
-          <span className="ml-2 text-sm text-slate-400">({reviewCount})</span>
+          <span className="ml-1.5 text-xs text-slate-400">{rating.toFixed(1)}</span>
         </div>
         <div className="mt-2 flex items-center justify-between">
-          <p className="font-semibold text-slate-dark">{price}</p>
-          <Button
-            size="sm"
-            variant="ghost"
-            className="gap-1 text-slate-default group-hover:bg-primary group-hover:text-white"
-          >
-            View
-            <ExternalLink className="h-3.5 w-3.5" />
-          </Button>
+          <p className="font-bold text-slate-900">{price}</p>
         </div>
       </div>
     </div>
   )
 }
-
