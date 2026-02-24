@@ -16,7 +16,7 @@ export function FeaturedReview() {
           className="object-cover"
         />
         {/* Liquid glass overlay at bottom */}
-        <div className="absolute bottom-0 left-0 right-0 backdrop-blur-xl bg-white/20 border-t border-white/30 p-4">
+        <div className="absolute bottom-0 left-0 right-0 backdrop-blur-2xl bg-white/10 backdrop-saturate-150 border-t border-white/20 p-4">
           <div className="flex items-center gap-2 mb-1.5">
             <Badge className="bg-primary/90 text-primary-foreground text-xs backdrop-blur-sm">Featured</Badge>
             <span className="text-xs text-white/80">Tech • Earbuds</span>
