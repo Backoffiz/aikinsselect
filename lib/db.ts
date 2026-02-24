@@ -3,15 +3,12 @@
  * Connects to Cloudflare D1 via HTTP API
  */
 
-const CF_API_TOKEN = process.env.CLOUDFLARE_API_TOKEN || ''
-const CF_ACCOUNT_ID = process.env.CLOUDFLARE_ACCOUNT_ID || 'fbaa45f12d47c61aca094d76476352a7'
-const D1_DATABASE_ID = process.env.D1_DATABASE_ID || '5df12367-0bd2-4568-9437-0090a640c47e'
+// D1 HTTP API credentials — read-only access to our own database
+const CF_API_TOKEN = '1Jxhjhzz4CWkuSzNqCiecPOWQe_eVUucFmNeI9u2'
+const CF_ACCOUNT_ID = 'fbaa45f12d47c61aca094d76476352a7'
+const D1_DATABASE_ID = '5df12367-0bd2-4568-9437-0090a640c47e'
 
 async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
-  if (!CF_API_TOKEN) {
-    console.warn('D1: No API token, returning empty results')
-    return []
-  }
   try {
     const res = await fetch(
       `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/d1/database/${D1_DATABASE_ID}/query`,
