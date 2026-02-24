@@ -38,42 +38,10 @@ export function SiteHeader() {
               <SearchBar className="mb-6" />
             </div>
             <nav className="grid gap-2 px-2">
-              <Link
-                href="/reviews"
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted"
-              >
-                Reviews
-              </Link>
-              <Link
-                href="/categories"
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted"
-              >
-                Categories
-              </Link>
-              <Link
-                href="/trending"
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted"
-              >
-                Trending
-              </Link>
-              <Link
-                href="/deals"
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted"
-              >
-                Deals
-              </Link>
-              <Link
-                href="/buying-guides"
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted"
-              >
-                Buying Guides
-              </Link>
-              <Link
-                href="/about"
-                className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted"
-              >
-                About
-              </Link>
+              <Link href="/reviews" className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted">Reviews</Link>
+              <Link href="/categories" className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted">Categories</Link>
+              <Link href="/about" className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted">About</Link>
+              <Link href="/disclosure" className="flex items-center gap-2 rounded-lg px-3 py-2 text-slate-default hover:text-primary hover:bg-muted">Affiliate Disclosure</Link>
             </nav>
           </SheetContent>
         </Sheet>
@@ -88,91 +56,37 @@ export function SiteHeader() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="w-56 bg-white border border-slate-200">
-              <DropdownMenuLabel className="text-slate-default">Categories</DropdownMenuLabel>
+              <DropdownMenuLabel className="text-slate-default">By Category</DropdownMenuLabel>
               <DropdownMenuSeparator className="bg-slate-200" />
-              <DropdownMenuItem asChild>
-                <Link href="/reviews/tech" className="text-slate-default hover:text-primary">
-                  Tech
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/reviews/home" className="text-slate-default hover:text-primary">
-                  Home
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/reviews/kitchen" className="text-slate-default hover:text-primary">
-                  Kitchen
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/reviews/fitness" className="text-slate-default hover:text-primary">
-                  Fitness
-                </Link>
-              </DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/categories/tech" className="text-slate-default hover:text-primary">Tech</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/categories/home" className="text-slate-default hover:text-primary">Home</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/categories/kitchen" className="text-slate-default hover:text-primary">Kitchen</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/categories/gaming" className="text-slate-default hover:text-primary">Gaming</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/categories/fitness" className="text-slate-default hover:text-primary">Fitness</Link></DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/categories/beauty" className="text-slate-default hover:text-primary">Beauty</Link></DropdownMenuItem>
               <DropdownMenuSeparator className="bg-slate-200" />
-              <DropdownMenuItem asChild>
-                <Link href="/reviews" className="text-slate-default hover:text-primary">
-                  All Reviews
-                </Link>
-              </DropdownMenuItem>
+              <DropdownMenuItem asChild><Link href="/reviews" className="text-slate-default hover:text-primary font-medium">All Reviews</Link></DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Link href="/categories" className="text-base text-slate-default hover:text-primary">
-            Categories
-          </Link>
-          <Link href="/trending" className="text-base text-slate-default hover:text-primary">
-            Trending
-          </Link>
-          <Link href="/deals" className="text-base text-slate-default hover:text-primary">
-            Deals
-          </Link>
-          <Link href="/buying-guides" className="text-base text-slate-default hover:text-primary">
-            Buying Guides
-          </Link>
+          <Link href="/categories" className="text-base text-slate-default hover:text-primary">Categories</Link>
+          <Link href="/about" className="text-base text-slate-default hover:text-primary">About</Link>
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {showSearch ? (
             <div className="relative hidden md:flex items-center">
               <SearchBar className="w-[300px]" />
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-0 text-slate-default"
-                onClick={() => setShowSearch(false)}
-              >
+              <Button variant="ghost" size="icon" className="absolute right-0 text-slate-default" onClick={() => setShowSearch(false)}>
                 <X className="h-4 w-4" />
-                <span className="sr-only">Close search</span>
               </Button>
             </div>
           ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              className="hidden md:flex text-slate-default hover:text-primary"
-              onClick={() => setShowSearch(true)}
-            >
+            <Button variant="ghost" size="icon" className="hidden md:flex text-slate-default hover:text-primary" onClick={() => setShowSearch(true)}>
               <Search className="h-5 w-5" />
               <span className="sr-only">Search</span>
             </Button>
           )}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden text-slate-default hover:text-primary"
-            onClick={() => setShowSearch(!showSearch)}
-          >
+          <Button variant="ghost" size="icon" className="md:hidden text-slate-default hover:text-primary" onClick={() => setShowSearch(!showSearch)}>
             <Search className="h-5 w-5" />
-            <span className="sr-only">Search</span>
-          </Button>
-          <Button variant="ghost" size="sm" className="hidden md:flex text-slate-default hover:text-primary">
-            About
-          </Button>
-          <Button variant="outline" size="sm" className="hidden md:flex">
-            Login
-          </Button>
-          <Button size="sm" className="hidden md:flex">
-            Subscribe
           </Button>
         </div>
       </div>
@@ -184,4 +98,3 @@ export function SiteHeader() {
     </header>
   )
 }
-

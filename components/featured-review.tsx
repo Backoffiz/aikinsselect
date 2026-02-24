@@ -34,7 +34,7 @@ export function FeaturedReview() {
               <span className="ml-2 text-xs text-slate-500">24 products tested</span>
             </div>
             <Button asChild size="sm" className="gap-1 bg-primary hover:bg-primary/90 text-white">
-              <Link href="/reviews/best-wireless-earbuds-2023">
+              <Link href="/reviews/best-wireless-earbuds">
                 Read Review
                 <ExternalLink className="h-3.5 w-3.5" />
               </Link>
