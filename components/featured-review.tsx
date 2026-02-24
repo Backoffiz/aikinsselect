@@ -10,7 +10,7 @@ export function FeaturedReview() {
     <Card className="overflow-hidden max-h-[360px]">
       <div className="relative h-[160px] overflow-hidden">
         <Image
-          src="/placeholder.svg?height=160&width=500"
+          src="/featured-earbuds.png"
           alt="Featured Review"
           width={500}
           height={160}
