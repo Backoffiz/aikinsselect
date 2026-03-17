@@ -93,6 +93,11 @@ export default async function CategoryPage({ params }: Props) {
               {bestPicks.map((product: any) => (
                 <div key={product.id} className="rounded-lg border-2 border-violet-200 bg-white p-5 hover:shadow-md transition-shadow">
                   <Badge className="bg-amber-100 text-amber-700 text-xs mb-2">⭐ Best Pick</Badge>
+                  {product.image_url && (
+                    <div className="flex justify-center my-3 h-32">
+                      <img src={product.image_url} alt={product.name} className="max-h-full object-contain" loading="lazy" />
+                    </div>
+                  )}
                   <h3 className="font-bold text-slate-900 text-lg">{product.name}</h3>
                   {product.description && <p className="text-sm text-slate-600 mt-1">{product.description}</p>}
                   <div className="flex items-center justify-between mt-3">
@@ -129,6 +134,11 @@ export default async function CategoryPage({ params }: Props) {
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {otherProducts.map((product: any) => (
               <div key={product.id} className="rounded-lg border border-slate-200 bg-white p-4 hover:shadow-sm transition-shadow">
+                {product.image_url && (
+                  <div className="flex justify-center my-2 h-24">
+                    <img src={product.image_url} alt={product.name} className="max-h-full object-contain" loading="lazy" />
+                  </div>
+                )}
                 <h3 className="font-semibold text-slate-900">{product.name}</h3>
                 <div className="flex items-center justify-between mt-2">
                   {product.price ? (

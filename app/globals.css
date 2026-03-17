@@ -90,3 +90,14 @@
     @apply bg-background text-foreground;
   }
 }
+/* Premium editorial palette */
+:root {
+  --premium-bg: #FCFCFA;
+  --premium-surface: #FFFFFF;
+  --premium-text: #121212;
+  --premium-text-secondary: #5F6368;
+  --premium-accent: #6D28D9;
+  --premium-accent-hover: #5B21B6;
+  --premium-lavender: #F3EEFF;
+  --premium-border: #E8E5EF;
+}

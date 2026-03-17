@@ -11,16 +11,19 @@ interface ProductCardProps {
   price: string
   bestPick?: boolean
   categorySlug?: string
+  affiliateUrl?: string
 }
 
 export function ProductCard({
   title,
   category,
+  image,
   rating,
   reviewCount,
   price,
   bestPick = false,
   categorySlug,
+  affiliateUrl,
 }: ProductCardProps) {
   // Color mapping for category backgrounds
   const categoryColors: Record<string, string> = {
@@ -39,10 +42,14 @@ export function ProductCard({
   }
 
   const gradient = categoryColors[category] || "from-violet-500 to-indigo-600"
+  const hasImage = image && !image.includes("placeholder")
+
+  const Wrapper = affiliateUrl ? 'a' : 'div'
+  const wrapperProps = affiliateUrl ? { href: affiliateUrl, target: '_blank', rel: 'noopener sponsored' } : {}
 
   return (
-    <div className="group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-all hover:shadow-lg">
-      <div className={`relative h-40 bg-gradient-to-br ${gradient} flex items-center justify-center p-4`}>
+    <Wrapper {...wrapperProps} className="group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-all hover:shadow-lg cursor-pointer block">
+      <div className={`relative h-48 ${hasImage ? "bg-white" : `bg-gradient-to-br ${gradient}`} flex items-center justify-center p-4`}>
         {bestPick && (
           <div className="absolute top-2 left-2 z-20">
             <Badge className="gap-1 bg-amber-400 text-amber-900 text-xs font-bold">
@@ -51,9 +58,18 @@ export function ProductCard({
             </Badge>
           </div>
         )}
-        <h3 className="text-lg font-bold text-white text-center drop-shadow-sm leading-tight">
-          {title}
-        </h3>
+        {hasImage ? (
+          <img
+            src={image}
+            alt={title}
+            className="max-h-full max-w-full object-contain"
+            loading="lazy"
+          />
+        ) : (
+          <h3 className="text-lg font-bold text-white text-center drop-shadow-sm leading-tight">
+            {title}
+          </h3>
+        )}
       </div>
       <div className="p-4">
         <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">{category}</div>
@@ -72,6 +88,6 @@ export function ProductCard({
           <p className="font-bold text-slate-900">{price}</p>
         </div>
       </div>
-    </div>
+    </Wrapper>
   )
 }
