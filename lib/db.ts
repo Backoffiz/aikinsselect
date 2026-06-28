@@ -1,25 +1,55 @@
 /**
  * Aikins Select - Database Layer
- * Connects to Cloudflare D1 via HTTP API
+ *
+ * In production (Cloudflare Pages, edge runtime) we talk to D1 directly through
+ * the `DB` binding declared in wrangler.jsonc — no credentials live in source.
+ *
+ * In local `next dev` there is no Cloudflare runtime, so we fall back to the D1
+ * HTTP API using credentials from .env.local (gitignored). For local dev set:
+ *   CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID, D1_DATABASE_ID
  */
-
-// D1 HTTP API credentials — read-only access to our own database
-const CF_API_TOKEN = '1Jxhjhzz4CWkuSzNqCiecPOWQe_eVUucFmNeI9u2'
-const CF_ACCOUNT_ID = 'fbaa45f12d47c61aca094d76476352a7'
-const D1_DATABASE_ID = '5df12367-0bd2-4568-9437-0090a640c47e'
+import { getOptionalRequestContext } from '@cloudflare/next-on-pages'
 
 async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+  // Production: use the D1 binding (no network round-trip, no secrets)
+  const db = getOptionalRequestContext()?.env?.DB as any
+  if (db) {
+    try {
+      const { results } = await db.prepare(sql).bind(...params).all()
+      return (results as T[]) || []
+    } catch (e) {
+      console.error('D1 binding query error:', e)
+      return []
+    }
+  }
+
+  // Local dev: fall back to the D1 HTTP API
+  return queryViaHttp<T>(sql, params)
+}
+
+// D1 HTTP API — local-dev fallback only. Credentials come from .env.local (never committed).
+async function queryViaHttp<T = any>(sql: string, params: any[] = []): Promise<T[]> {
+  const apiToken = process.env.CLOUDFLARE_API_TOKEN
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID
+  const databaseId = process.env.D1_DATABASE_ID
+
+  if (!apiToken || !accountId || !databaseId) {
+    console.error(
+      'D1 HTTP fallback unavailable: set CLOUDFLARE_API_TOKEN, CLOUDFLARE_ACCOUNT_ID and D1_DATABASE_ID in .env.local'
+    )
+    return []
+  }
+
   try {
     const res = await fetch(
-      `https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/d1/database/${D1_DATABASE_ID}/query`,
+      `https://api.cloudflare.com/client/v4/accounts/${accountId}/d1/database/${databaseId}/query`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${CF_API_TOKEN}`,
+          'Authorization': `Bearer ${apiToken}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ sql, params }),
-        // D1 HTTP API — no caching needed, queries are fast
       }
     )
     const data = await res.json()
