@@ -20,93 +20,86 @@ const config = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        // shadcn semantic core — driven by :root vars (alpha-aware)
+        border: "hsl(var(--border) / <alpha-value>)",
+        input: "hsl(var(--input) / <alpha-value>)",
+        ring: "hsl(var(--ring) / <alpha-value>)",
+        background: "hsl(var(--background) / <alpha-value>)",
+        foreground: "hsl(var(--foreground) / <alpha-value>)",
         primary: {
-          DEFAULT: "#7C3AED", // Slightly darker violet (Violet 600) for stronger impact
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--primary) / <alpha-value>)",
+          foreground: "hsl(var(--primary-foreground) / <alpha-value>)",
         },
         secondary: {
-          DEFAULT: "#3B82F6", // Select Blue
-          foreground: "#FFFFFF", // White
+          DEFAULT: "hsl(var(--secondary) / <alpha-value>)",
+          foreground: "hsl(var(--secondary-foreground) / <alpha-value>)",
         },
         destructive: {
-          DEFAULT: "hsl(var(--destructive))",
-          foreground: "hsl(var(--destructive-foreground))",
+          DEFAULT: "hsl(var(--destructive) / <alpha-value>)",
+          foreground: "hsl(var(--destructive-foreground) / <alpha-value>)",
         },
         muted: {
-          DEFAULT: "#F3E8FF", // Violet 100 for softer backgrounds
-          foreground: "#5B21B6", // Violet 800 ensures readability
+          DEFAULT: "hsl(var(--muted) / <alpha-value>)",
+          foreground: "hsl(var(--muted-foreground) / <alpha-value>)",
         },
         accent: {
-          DEFAULT: "#14B8A6", // Teal 500 introduces vibrancy and complements violet well
-          foreground: "#ffffff",
+          DEFAULT: "hsl(var(--accent) / <alpha-value>)",
+          foreground: "hsl(var(--accent-foreground) / <alpha-value>)",
         },
         popover: {
-          DEFAULT: "#FFFFFF", // White
-          foreground: "#1E293B", // Deep Slate
+          DEFAULT: "hsl(var(--popover) / <alpha-value>)",
+          foreground: "hsl(var(--popover-foreground) / <alpha-value>)",
         },
         card: {
-          DEFAULT: "#FFFFFF", // White
-          foreground: "#1E293B", // Deep Slate
+          DEFAULT: "hsl(var(--card) / <alpha-value>)",
+          foreground: "hsl(var(--card-foreground) / <alpha-value>)",
         },
-        // Custom color palette
-        violet: {
-          DEFAULT: "#7C3AED", // Violet 600
-          light: "#A78BFA", // Violet 400
-          dark: "#5B21B6", // Violet 800
-          50: "#F5F3FF",
-          100: "#F3E8FF",
-          200: "#E9D5FF",
-          300: "#D8B4FE",
-          400: "#C084FC",
-          500: "#A855F7",
-          600: "#7C3AED",
-          700: "#6D28D9",
-          800: "#5B21B6",
-          900: "#4C1D95",
+
+        // Editorial palette — flat hex, light-only
+        paper: "#FBFAF7",
+        "paper-deep": "#F1EEE6",
+        panel: "#F4F1E9",
+        ink: {
+          DEFAULT: "#1A1A17",
+          deep: "#15140F",
         },
-        teal: {
-          DEFAULT: "#14B8A6", // Teal 500
-          light: "#5EEAD4", // Teal 300
-          dark: "#0F766E", // Teal 700
-          50: "#F0FDFA",
-          100: "#CCFBF1",
-          200: "#99F6E4",
-          300: "#5EEAD4",
-          400: "#2DD4BF",
-          500: "#14B8A6",
-          600: "#0D9488",
-          700: "#0F766E",
-          800: "#115E59",
-          900: "#134E4A",
+        body: "#3C3A33",
+        "muted-ink": "#5A574C",
+        faint: "#8A8578",
+        hairline: "#ECE8DE",
+        "card-edge": "#E7E2D6",
+        "input-edge": "#D8D3C6",
+        brand: {
+          DEFAULT: "#1F6F4A",
+          hover: "#1A5C3D",
+          "on-dark": "#7FE3A6",
         },
-        slate: {
-          DEFAULT: "#1E293B", // Deep Slate
-          light: "#334155",
-          dark: "#0F172A",
+        deal: "#C2410C",
+        star: "#C2410C",
+        savings: {
+          DEFAULT: "#15803D",
+          bg: "#DCFCE7",
         },
-        blue: {
-          DEFAULT: "#3B82F6", // Select Blue
-          light: "#60A5FA",
-          dark: "#2563EB",
+        award: {
+          DEFAULT: "#92400E",
+          bg: "#FEF3C7",
         },
+      },
+      fontFamily: {
+        sans: ["var(--font-public-sans)", "ui-sans-serif", "system-ui", "sans-serif"],
+        serif: ["var(--font-newsreader)", "ui-serif", "Georgia", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        pill: "100px",
       },
       boxShadow: {
-        "violet-sm": "0 1px 2px 0 rgba(124, 58, 237, 0.05)",
-        "violet-md": "0 4px 6px -1px rgba(124, 58, 237, 0.1), 0 2px 4px -1px rgba(124, 58, 237, 0.06)",
-        "teal-sm": "0 1px 2px 0 rgba(20, 184, 166, 0.05)",
-        "teal-md": "0 4px 6px -1px rgba(20, 184, 166, 0.1), 0 2px 4px -1px rgba(20, 184, 166, 0.06)",
-        "blue-sm": "0 1px 2px 0 rgba(59, 130, 246, 0.05)",
-        "blue-md": "0 4px 6px -1px rgba(59, 130, 246, 0.1), 0 2px 4px -1px rgba(59, 130, 246, 0.06)",
+        card: "0 1px 2px 0 rgba(26, 26, 23, 0.04)",
+        "card-hover": "0 18px 40px -28px rgba(26, 26, 23, 0.4)",
+        popover: "0 18px 40px -16px rgba(26, 26, 23, 0.4)",
+        modal: "0 30px 80px -24px rgba(21, 20, 15, 0.6)",
       },
       keyframes: {
         "accordion-down": {
@@ -117,15 +110,16 @@ const config = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
+        "live-pulse": {
+          "0%": { boxShadow: "0 0 0 0 rgba(43, 213, 118, 0.55)" },
+          "70%": { boxShadow: "0 0 0 6px rgba(43, 213, 118, 0)" },
+          "100%": { boxShadow: "0 0 0 0 rgba(43, 213, 118, 0)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-      },
-      backgroundImage: {
-        "violet-gradient": "linear-gradient(to right, #F3E8FF, #DDD6FE)",
-        "teal-gradient": "linear-gradient(to right, #14B8A6, #5EEAD4)",
-        "blue-gradient": "linear-gradient(to right, #3B82F6, #60A5FA)",
+        "live-pulse": "live-pulse 2s infinite",
       },
     },
   },

@@ -176,6 +176,33 @@ export async function getProductBySlug(slug: string) {
   return results[0] || null
 }
 
+// Alternatives = same category, excluding the current product.
+export async function getAlternativeProducts(categoryId: string, excludeId: string, limit = 3) {
+  return query(
+    `SELECT p.*, c.name as category_name, c.slug as category_slug
+     FROM products p
+     LEFT JOIN categories c ON p.category_id = c.id
+     WHERE p.category_id = ? AND p.id != ? AND p.status = 'published'
+     ORDER BY p.is_best_pick DESC, p.rating DESC
+     LIMIT ?`,
+    [categoryId, excludeId, limit]
+  )
+}
+
+// The first published review that features this product (for "read the full review" + verdict snippet).
+export async function getReviewForProduct(productId: string) {
+  const results = await query(
+    `SELECT r.title, r.slug, r.subtitle, rp.mini_review, rp.rank
+     FROM reviews r
+     JOIN review_products rp ON rp.review_id = r.id
+     WHERE rp.product_id = ? AND r.status = 'published'
+     ORDER BY rp.rank ASC
+     LIMIT 1`,
+    [productId]
+  )
+  return results[0] || null
+}
+
 export async function getProductsForReview(reviewSlug: string) {
   return query(
     `SELECT p.*, rp.rank, rp.mini_review 

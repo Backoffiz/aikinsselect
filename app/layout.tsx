@@ -1,9 +1,21 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Newsreader, Public_Sans } from 'next/font/google'
 import './globals.css'
+import { SavedProvider } from '@/components/providers/saved-provider'
+import { Toaster } from '@/components/ui/sonner'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const serif = Newsreader({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-newsreader',
+  display: 'swap',
+})
+const sans = Public_Sans({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+  variable: '--font-public-sans',
+  display: 'swap',
+})
 
 export const metadata: Metadata = {
   title: {
@@ -46,9 +58,10 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className="font-sans antialiased">
-        {children}
+    <html lang="en" className={`${sans.variable} ${serif.variable}`}>
+      <body className="font-sans antialiased bg-paper text-body">
+        <SavedProvider>{children}</SavedProvider>
+        <Toaster />
       </body>
     </html>
   )

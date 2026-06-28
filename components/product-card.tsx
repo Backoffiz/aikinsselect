@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
+import { SaveHeartButton } from "@/components/saved/save-heart-button"
 import { Award, Star } from "lucide-react"
 
 interface ProductCardProps {
@@ -9,9 +10,21 @@ interface ProductCardProps {
   rating: number
   reviewCount?: number
   price: string
+  /** Original/list price (display string, e.g. "$348"). When higher than price, renders a struck price + discount pill. */
+  originalPrice?: string
   bestPick?: boolean
   categorySlug?: string
+  /** External affiliate URL — used by the green "Check price" CTA. */
   affiliateUrl?: string
+  /** Product id + slug enable the save-heart and the internal detail link. */
+  productId?: string
+  slug?: string
+}
+
+function toNumber(s?: string): number | null {
+  if (!s) return null
+  const n = Number(s.replace(/[^0-9.]/g, ""))
+  return Number.isFinite(n) && n > 0 ? n : null
 }
 
 export function ProductCard({
@@ -21,73 +34,90 @@ export function ProductCard({
   rating,
   reviewCount,
   price,
+  originalPrice,
   bestPick = false,
-  categorySlug,
   affiliateUrl,
+  productId,
+  slug,
 }: ProductCardProps) {
-  // Color mapping for category backgrounds
-  const categoryColors: Record<string, string> = {
-    Tech: "from-violet-500 to-indigo-600",
-    Home: "from-emerald-500 to-teal-600",
-    Kitchen: "from-orange-500 to-red-500",
-    Gaming: "from-purple-600 to-pink-600",
-    Fitness: "from-green-500 to-lime-600",
-    Beauty: "from-pink-400 to-rose-500",
-    Travel: "from-sky-500 to-blue-600",
-    Pets: "from-amber-500 to-yellow-600",
-    Office: "from-slate-500 to-gray-600",
-    Outdoors: "from-green-600 to-emerald-700",
-    Baby: "from-blue-300 to-indigo-400",
-    Auto: "from-gray-600 to-slate-700",
-  }
-
-  const gradient = categoryColors[category] || "from-violet-500 to-indigo-600"
   const hasImage = image && !image.includes("placeholder")
+  const detailHref = slug ? `/products/${slug}` : affiliateUrl
 
-  const Wrapper = affiliateUrl ? 'a' : 'div'
-  const wrapperProps = affiliateUrl ? { href: affiliateUrl, target: '_blank', rel: 'noopener sponsored' } : {}
+  const priceNum = toNumber(price)
+  const origNum = toNumber(originalPrice)
+  const hasDeal = priceNum !== null && origNum !== null && origNum > priceNum
+  const savePct = hasDeal ? Math.round(((origNum! - priceNum!) / origNum!) * 100) : 0
+
+  const heartId = productId ?? slug
+  const savedItem = heartId
+    ? { id: heartId, name: title, price, wasPrice: originalPrice, sub: category, slug, image }
+    : null
 
   return (
-    <Wrapper {...wrapperProps} className="group relative overflow-hidden rounded-lg border border-slate-200 bg-white transition-all hover:shadow-lg cursor-pointer block">
-      <div className={`relative h-48 ${hasImage ? "bg-white" : `bg-gradient-to-br ${gradient}`} flex items-center justify-center p-4`}>
+    <div className="group relative flex flex-col overflow-hidden rounded-[5px] border border-card-edge bg-white transition-all hover:shadow-card-hover">
+      <div className={`relative flex h-48 items-center justify-center p-4 ${hasImage ? "bg-white" : "bg-paper-deep"}`}>
         {bestPick && (
-          <div className="absolute top-2 left-2 z-20">
-            <Badge className="gap-1 bg-amber-400 text-amber-900 text-xs font-bold">
+          <div className="absolute left-3 top-3 z-20">
+            <Badge variant="award" className="gap-1 rounded-[2px] text-[10px] font-extrabold uppercase tracking-wide">
               <Award className="h-3 w-3" />
               Best Pick
             </Badge>
           </div>
         )}
+        {hasDeal && (
+          <div className="absolute left-3 bottom-3 z-20">
+            <Badge variant="deal" className="rounded-pill text-[10px] font-extrabold">-{savePct}%</Badge>
+          </div>
+        )}
+        {savedItem && <SaveHeartButton item={savedItem} />}
         {hasImage ? (
-          <img
-            src={image}
-            alt={title}
-            className="max-h-full max-w-full object-contain"
-            loading="lazy"
-          />
+          <img src={image} alt={title} className="max-h-full max-w-full object-contain" loading="lazy" />
         ) : (
-          <h3 className="text-lg font-bold text-white text-center drop-shadow-sm leading-tight">
-            {title}
-          </h3>
+          <span className="px-2 text-center font-serif text-xl text-muted-ink">{title}</span>
         )}
       </div>
-      <div className="p-4">
-        <div className="text-xs text-slate-500 font-medium uppercase tracking-wide">{category}</div>
-        <div className="mt-2 flex items-center">
+      <div className="flex flex-1 flex-col p-5">
+        <div className="text-[11px] font-bold uppercase tracking-wider text-faint">{category}</div>
+        <h3 className="mt-1.5 font-semibold leading-snug text-ink">
+          {detailHref ? (
+            <Link href={detailHref} className="after:absolute after:inset-0">
+              {title}
+            </Link>
+          ) : (
+            title
+          )}
+        </h3>
+        <div className="mt-2 flex items-center gap-2">
           <div className="flex">
             {[...Array(5)].map((_, i) => (
               <Star
                 key={i}
-                className={`h-3.5 w-3.5 ${i < Math.floor(rating) ? "fill-amber-400 text-amber-400" : "fill-slate-200 text-slate-200"}`}
+                className={`h-3.5 w-3.5 ${i < Math.floor(rating) ? "fill-star text-star" : "fill-hairline text-hairline"}`}
               />
             ))}
           </div>
-          <span className="ml-1.5 text-xs text-slate-400">{rating.toFixed(1)}</span>
+          <span className="text-xs text-faint">
+            {rating.toFixed(1)}
+            {reviewCount ? ` (${reviewCount})` : ""}
+          </span>
         </div>
-        <div className="mt-2 flex items-center justify-between">
-          <p className="font-bold text-slate-900">{price}</p>
+        <div className="mt-auto flex items-end justify-between pt-4">
+          <div className="flex items-baseline gap-2">
+            <p className="font-serif text-xl font-semibold tabular-nums text-ink">{price}</p>
+            {hasDeal && <span className="text-xs text-faint line-through">{originalPrice}</span>}
+          </div>
+          {affiliateUrl && (
+            <a
+              href={affiliateUrl}
+              target="_blank"
+              rel="noopener sponsored"
+              className="relative z-20 rounded-[2px] bg-brand px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-hover"
+            >
+              Check price
+            </a>
+          )}
         </div>
       </div>
-    </Wrapper>
+    </div>
   )
 }

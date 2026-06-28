@@ -4,9 +4,8 @@ import Link from 'next/link'
 import { searchProducts, searchReviews } from '@/lib/db'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
-import { Badge } from '@/components/ui/badge'
-import { SearchBar } from '@/components/search-bar'
-import { ShoppingCart } from 'lucide-react'
+import { ProductCard } from '@/components/product-card'
+import { Button } from '@/components/ui/button'
 import type { Metadata } from 'next'
 
 type Props = { searchParams: Promise<{ q?: string }> }
@@ -25,10 +24,10 @@ export default async function SearchPage({ searchParams }: Props) {
     : [[], []]
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-paper">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-8 md:py-12 max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-slate-900 mb-6">Search</h1>
+      <main className="flex-1 container px-4 py-12 md:py-16 max-w-4xl mx-auto">
+        <h1 className="mb-6 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">Search</h1>
 
         <form action="/search" method="GET" className="mb-8">
           <div className="flex gap-2">
@@ -37,39 +36,36 @@ export default async function SearchPage({ searchParams }: Props) {
               name="q"
               defaultValue={query}
               placeholder="Search products and reviews..."
-              className="flex-1 rounded-lg border border-slate-300 px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+              className="flex-1 rounded-[3px] border border-input bg-white px-4 py-3 text-sm text-ink placeholder:text-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             />
-            <button
-              type="submit"
-              className="px-6 py-3 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 transition-colors"
-            >
+            <Button type="submit" size="lg" className="shrink-0">
               Search
-            </button>
+            </Button>
           </div>
         </form>
 
         {query && (
-          <p className="text-sm text-slate-500 mb-6">
+          <p className="mb-6 text-sm text-muted-ink">
             Found {reviews.length} reviews and {products.length} products for &ldquo;{query}&rdquo;
           </p>
         )}
 
         {/* Reviews */}
         {reviews.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Reviews</h2>
+          <div className="mb-12">
+            <h2 className="mb-4 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">Reviews</h2>
             <div className="space-y-3">
               {reviews.map((review: any) => (
                 <Link
                   key={review.id}
                   href={`/reviews/${review.slug}`}
-                  className="block rounded-lg border border-slate-200 bg-white p-4 hover:shadow-md hover:border-violet-200 transition-all"
+                  className="block rounded-[5px] border border-card-edge bg-white p-4 transition-all hover:shadow-card-hover"
                 >
-                  <div className="flex items-center gap-2 mb-1">
-                    <Badge className="bg-violet-100 text-violet-700 text-xs">{review.category_name || 'Review'}</Badge>
+                  <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-brand">
+                    {review.category_name || 'Review'}
                   </div>
-                  <h3 className="font-bold text-slate-900">{review.title}</h3>
-                  {review.subtitle && <p className="text-sm text-slate-600 mt-1">{review.subtitle}</p>}
+                  <h3 className="font-serif text-lg font-medium text-ink">{review.title}</h3>
+                  {review.subtitle && <p className="mt-1 text-sm leading-relaxed text-muted-ink">{review.subtitle}</p>}
                 </Link>
               ))}
             </div>
@@ -78,42 +74,31 @@ export default async function SearchPage({ searchParams }: Props) {
 
         {/* Products */}
         {products.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Products</h2>
-            <div className="grid gap-3 sm:grid-cols-2">
+          <div className="mb-12">
+            <h2 className="mb-4 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">Products</h2>
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {products.map((product: any) => (
-                <div key={product.id} className="rounded-lg border border-slate-200 bg-white p-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      {product.is_best_pick === 1 && <Badge className="bg-amber-100 text-amber-700 text-xs mb-1">⭐ Best Pick</Badge>}
-                      <h3 className="font-bold text-slate-900">{product.name}</h3>
-                      <p className="text-xs text-slate-500">{product.category_name}</p>
-                    </div>
-                    {product.price && (
-                      <span className="font-bold text-violet-600">${Number(product.price).toFixed(2)}</span>
-                    )}
-                  </div>
-                  {product.affiliate_url && (
-                    <a
-                      href={product.affiliate_url}
-                      target="_blank"
-                      rel="noopener sponsored"
-                      className="mt-3 flex items-center justify-center gap-2 text-xs font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-md py-2 transition-colors"
-                    >
-                      <ShoppingCart className="h-3.5 w-3.5" />
-                      Check Price
-                    </a>
-                  )}
-                </div>
+                <ProductCard
+                  key={product.id}
+                  productId={product.id}
+                  slug={product.slug}
+                  title={product.name}
+                  category={product.category_name}
+                  image={product.image_url}
+                  rating={product.rating || 4.5}
+                  price={product.price ? `$${Number(product.price).toFixed(2)}` : 'Check price'}
+                  affiliateUrl={product.affiliate_url}
+                  bestPick={product.is_best_pick === 1}
+                />
               ))}
             </div>
           </div>
         )}
 
         {query && reviews.length === 0 && products.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-slate-500 text-lg">No results found for &ldquo;{query}&rdquo;</p>
-            <p className="text-slate-400 mt-2">Try a different search term or browse our <Link href="/categories" className="text-violet-600 hover:underline">categories</Link></p>
+          <div className="py-12 text-center">
+            <p className="text-lg text-muted-ink">No results found for &ldquo;{query}&rdquo;</p>
+            <p className="mt-2 text-faint">Try a different search term or browse our <Link href="/categories" className="text-brand hover:underline">categories</Link></p>
           </div>
         )}
       </main>

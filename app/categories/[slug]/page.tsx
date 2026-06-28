@@ -5,8 +5,8 @@ import Image from 'next/image'
 import { getCategoryBySlug, getProductsByCategory, getReviewsByCategory } from '@/lib/db'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
-import { Badge } from '@/components/ui/badge'
-import { ShoppingCart, Star, ArrowLeft } from 'lucide-react'
+import { ProductCard } from '@/components/product-card'
+import { ArrowLeft } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 
@@ -38,143 +38,101 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-8 md:py-12">
-        {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
-          <Link href="/" className="hover:text-violet-600">Home</Link>
-          <span>/</span>
-          <Link href="/categories" className="hover:text-violet-600">Categories</Link>
-          <span>/</span>
-          <span className="text-slate-900 font-medium">{category.name}</span>
-        </nav>
-
+      <main className="flex-1">
         {/* Category Hero */}
-        <div className="relative rounded-xl overflow-hidden mb-8 h-48 md:h-64">
-          <Image
-            src={`/categories/${slug}.jpg`}
-            alt={category.name}
-            fill
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
-          <div className="absolute bottom-0 left-0 right-0 p-6">
-            <h1 className="text-3xl md:text-4xl font-bold text-white drop-shadow-sm">Best {category.name} Products</h1>
-            <p className="text-white/80 mt-1">
+        <div className="relative h-64 w-full overflow-hidden md:h-72">
+          <Image src={`/categories/${slug}.jpg`} alt={category.name} fill className="object-cover" priority />
+          <div className="absolute inset-0 bg-gradient-to-b from-ink-deep/35 to-ink-deep/85" />
+          <div className="container absolute inset-x-0 bottom-0 px-4 pb-8 md:px-6">
+            <nav className="mb-3 flex items-center gap-2 text-[13px] text-white/75">
+              <Link href="/" className="hover:text-white">Home</Link>
+              <span>/</span>
+              <Link href="/categories" className="hover:text-white">Categories</Link>
+              <span>/</span>
+              <span className="text-white">{category.name}</span>
+            </nav>
+            <h1 className="font-serif text-4xl font-medium tracking-tight text-white drop-shadow-sm md:text-5xl">
+              Best {category.name} Products
+            </h1>
+            <p className="mt-2 max-w-xl text-white/85">
               {products.length} products reviewed • {bestPicks.length} editor&apos;s picks
             </p>
           </div>
         </div>
 
-        {/* Reviews for this category */}
-        {reviews.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">Reviews in {category.name}</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {reviews.map((review: any) => (
-                <Link
-                  key={review.id}
-                  href={`/reviews/${review.slug}`}
-                  className="block rounded-lg border border-slate-200 bg-white p-4 hover:shadow-md hover:border-violet-200 transition-all"
-                >
-                  <Badge className="bg-violet-100 text-violet-700 text-xs mb-2">Review</Badge>
-                  <h3 className="font-bold text-slate-900">{review.title}</h3>
-                  {review.subtitle && <p className="text-sm text-slate-600 mt-1 line-clamp-2">{review.subtitle}</p>}
-                </Link>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Best Picks */}
-        {bestPicks.length > 0 && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold text-slate-900 mb-4">⭐ Editor&apos;s Picks</h2>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {bestPicks.map((product: any) => (
-                <div key={product.id} className="rounded-lg border-2 border-violet-200 bg-white p-5 hover:shadow-md transition-shadow">
-                  <Badge className="bg-amber-100 text-amber-700 text-xs mb-2">⭐ Best Pick</Badge>
-                  {product.image_url && (
-                    <div className="flex justify-center my-3 h-32">
-                      <img src={product.image_url} alt={product.name} className="max-h-full object-contain" loading="lazy" />
-                    </div>
-                  )}
-                  <h3 className="font-bold text-slate-900 text-lg">{product.name}</h3>
-                  {product.description && <p className="text-sm text-slate-600 mt-1">{product.description}</p>}
-                  <div className="flex items-center justify-between mt-3">
-                    {product.price && (
-                      <span className="text-xl font-bold text-violet-600">${Number(product.price).toFixed(2)}</span>
-                    )}
-                    {product.rating && (
-                      <div className="flex items-center gap-1">
-                        <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
-                        <span className="text-sm font-medium">{product.rating}</span>
-                      </div>
-                    )}
-                  </div>
-                  {product.affiliate_url && (
-                    <a
-                      href={product.affiliate_url}
-                      target="_blank"
-                      rel="noopener sponsored"
-                      className="mt-3 flex items-center justify-center gap-2 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-md py-2.5 transition-colors"
-                    >
-                      <ShoppingCart className="h-4 w-4" />
-                      Check Price on Amazon
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* All Products */}
-        <div className="mb-10">
-          <h2 className="text-xl font-bold text-slate-900 mb-4">All {category.name} Products</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {otherProducts.map((product: any) => (
-              <div key={product.id} className="rounded-lg border border-slate-200 bg-white p-4 hover:shadow-sm transition-shadow">
-                {product.image_url && (
-                  <div className="flex justify-center my-2 h-24">
-                    <img src={product.image_url} alt={product.name} className="max-h-full object-contain" loading="lazy" />
-                  </div>
-                )}
-                <h3 className="font-semibold text-slate-900">{product.name}</h3>
-                {product.description && (
-                  <p className="text-sm text-slate-600 mt-1 line-clamp-3">{product.description}</p>
-                )}
-                <div className="flex items-center justify-between mt-2">
-                  {product.price ? (
-                    <span className="font-bold text-violet-600">${Number(product.price).toFixed(2)}</span>
-                  ) : (
-                    <span className="text-sm text-slate-400">Price TBD</span>
-                  )}
-                  {product.rating && (
-                    <div className="flex items-center gap-1">
-                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                      <span className="text-xs font-medium text-slate-600">{product.rating}</span>
-                    </div>
-                  )}
-                </div>
-                {product.affiliate_url && (
-                  <a
-                    href={product.affiliate_url}
-                    target="_blank"
-                    rel="noopener sponsored"
-                    className="mt-2 block text-center text-xs font-medium text-violet-600 hover:text-violet-700 border border-violet-200 rounded py-1.5 transition-colors"
+        <div className="container px-4 py-10 md:px-6 md:py-12">
+          {/* Reviews for this category */}
+          {reviews.length > 0 && (
+            <section className="mb-12">
+              <h2 className="mb-5 font-serif text-2xl font-medium text-ink">Reviews in {category.name}</h2>
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {reviews.map((review: any) => (
+                  <Link
+                    key={review.id}
+                    href={`/reviews/${review.slug}`}
+                    className="block rounded-[5px] border border-card-edge bg-white p-5 transition-all hover:shadow-card-hover"
                   >
-                    Check Price →
-                  </a>
-                )}
+                    <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-brand">Buying guide</div>
+                    <h3 className="font-serif text-lg font-medium text-ink">{review.title}</h3>
+                    {review.subtitle && <p className="mt-1 line-clamp-2 text-sm text-muted-ink">{review.subtitle}</p>}
+                  </Link>
+                ))}
               </div>
-            ))}
-          </div>
-        </div>
+            </section>
+          )}
 
-        <Link href="/categories" className="inline-flex items-center text-violet-600 hover:text-violet-700 font-medium">
-          <ArrowLeft className="mr-2 h-4 w-4" />
-          Back to Categories
-        </Link>
+          {/* Best Picks */}
+          {bestPicks.length > 0 && (
+            <section className="mb-12">
+              <h2 className="mb-5 font-serif text-2xl font-medium text-ink">Editor&apos;s picks</h2>
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {bestPicks.map((product: any) => (
+                  <ProductCard
+                    key={product.id}
+                    productId={product.id}
+                    slug={product.slug}
+                    title={product.name}
+                    category={category.name}
+                    image={product.image_url}
+                    rating={product.rating || 4.5}
+                    price={product.price ? `$${Number(product.price).toFixed(2)}` : 'Check price'}
+                    bestPick
+                    affiliateUrl={product.affiliate_url}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
+
+          {/* All Products */}
+          <section className="mb-12">
+            <h2 className="mb-5 font-serif text-2xl font-medium text-ink">All {category.name} products</h2>
+            {otherProducts.length > 0 ? (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {otherProducts.map((product: any) => (
+                  <ProductCard
+                    key={product.id}
+                    productId={product.id}
+                    slug={product.slug}
+                    title={product.name}
+                    category={category.name}
+                    image={product.image_url}
+                    rating={product.rating || 4.5}
+                    price={product.price ? `$${Number(product.price).toFixed(2)}` : 'Check price'}
+                    affiliateUrl={product.affiliate_url}
+                  />
+                ))}
+              </div>
+            ) : (
+              <p className="py-8 text-center text-faint">More products coming soon.</p>
+            )}
+          </section>
+
+          <Link href="/categories" className="inline-flex items-center font-semibold text-brand hover:text-brand-hover">
+            <ArrowLeft className="mr-2 h-4 w-4" />
+            Back to Categories
+          </Link>
+        </div>
       </main>
       <SiteFooter />
     </div>

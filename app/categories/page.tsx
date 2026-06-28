@@ -16,12 +16,13 @@ export default async function CategoriesPage() {
   const categories = await getCategories()
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-paper">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-8 md:py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Browse Categories</h1>
-          <p className="text-slate-600 mt-2">Find the best products in every category</p>
+      <main className="flex-1 container px-4 py-12 md:py-16">
+        <div className="mb-10">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-brand">Categories</p>
+          <h1 className="mt-2 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">Browse Categories</h1>
+          <p className="mt-3 text-lg text-muted-ink">Find the best products in every category</p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
@@ -29,7 +30,7 @@ export default async function CategoriesPage() {
             <Link
               key={cat.id}
               href={`/categories/${cat.slug}`}
-              className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white transition-all hover:shadow-lg hover:border-violet-200"
+              className="group relative overflow-hidden rounded-[5px] border border-card-edge bg-white transition-all hover:shadow-card-hover"
             >
               <div className="relative aspect-[4/3] overflow-hidden">
                 <Image
@@ -40,10 +41,10 @@ export default async function CategoriesPage() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-4">
-                  <h2 className="text-xl font-bold text-white drop-shadow-sm">
+                  <h2 className="font-serif text-xl font-medium text-white drop-shadow-sm">
                     {cat.name}
                   </h2>
-                  <p className="text-sm text-white/80">{cat.product_count || 0} products</p>
+                  <p className="text-sm text-white/85">{cat.product_count || 0} products</p>
                 </div>
               </div>
             </Link>

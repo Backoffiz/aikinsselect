@@ -9,48 +9,49 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-paper">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-12 max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-slate-900 mb-6">About Aikins Select</h1>
+      <main className="flex-1 container px-4 py-12 md:py-16 max-w-3xl mx-auto">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-brand">About</p>
+        <h1 className="mt-2 mb-8 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">About Aikins Select</h1>
 
-        <div className="prose prose-slate max-w-none space-y-6">
-          <p className="text-lg text-slate-600">
+        <div className="space-y-6">
+          <p className="text-lg leading-relaxed text-body">
             Aikins Select is an independent product review site that helps you find the best products
             without the guesswork. We combine expert analysis from trusted sources with real user
             feedback to deliver honest, research-backed recommendations.
           </p>
 
-          <h2 className="text-2xl font-bold text-slate-900 mt-8">Our Review Process</h2>
-          <p className="text-slate-600">
+          <h2 className="mt-10 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">Our Review Process</h2>
+          <p className="leading-relaxed text-body">
             Every product recommendation on Aikins Select goes through a rigorous research process:
           </p>
-          <ol className="list-decimal list-inside space-y-3 text-slate-600">
+          <ol className="list-decimal list-inside space-y-3 leading-relaxed text-body">
             <li><strong>Expert Source Analysis</strong> — We cross-reference reviews from Wirecutter, RTINGS, Tom&apos;s Guide, and other trusted publications to understand expert consensus.</li>
             <li><strong>Real User Feedback</strong> — We analyze hundreds of user reviews from Amazon, Reddit, and enthusiast forums to capture what everyday users actually experience.</li>
             <li><strong>AI-Powered Synthesis</strong> — Our AI research engine aggregates all this data to produce balanced, comprehensive reviews that highlight true strengths and weaknesses.</li>
             <li><strong>Independent Scoring</strong> — Each product receives an Aikins Select score based on performance, value, reliability, and user satisfaction across all sources.</li>
           </ol>
 
-          <h2 className="text-2xl font-bold text-slate-900 mt-8">Why Trust Us?</h2>
-          <p className="text-slate-600">
+          <h2 className="mt-10 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">Why Trust Us?</h2>
+          <p className="leading-relaxed text-body">
             Unlike single-source reviews, we don&apos;t rely on one opinion. By synthesizing data from
             5+ professional review sites and real user communities, we surface products that
             consistently perform well — not just in lab tests, but in real life.
           </p>
 
-          <h2 className="text-2xl font-bold text-slate-900 mt-8">How We Make Money</h2>
-          <p className="text-slate-600">
+          <h2 className="mt-10 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">How We Make Money</h2>
+          <p className="leading-relaxed text-body">
             Aikins Select is reader-supported. When you buy through links on our site, we may earn
             an affiliate commission at no extra cost to you. This supports our research and helps
             us keep the site free. We never let affiliate relationships influence our recommendations —
             our reviews are based purely on research and data.
           </p>
 
-          <h2 className="text-2xl font-bold text-slate-900 mt-8">Contact Us</h2>
-          <p className="text-slate-600">
+          <h2 className="mt-10 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">Contact Us</h2>
+          <p className="leading-relaxed text-body">
             Have questions, feedback, or product suggestions? We&apos;d love to hear from you.
-            Reach us at <a href="mailto:hello@aikinsselect.com" className="text-violet-600 hover:underline">hello@aikinsselect.com</a>.
+            Reach us at <a href="mailto:hello@aikinsselect.com" className="text-brand hover:underline">hello@aikinsselect.com</a>.
           </p>
         </div>
       </main>

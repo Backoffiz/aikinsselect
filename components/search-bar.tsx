@@ -27,7 +27,7 @@ export function SearchBar({ className }: SearchBarProps) {
       <Input
         type="search"
         placeholder="Search products, brands, or categories..."
-        className="pr-10 bg-white border-slate-200 text-slate-default placeholder:text-slate-400 focus-visible:ring-violet-500"
+        className="pr-10 bg-white border-input text-body placeholder:text-faint"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
@@ -35,7 +35,7 @@ export function SearchBar({ className }: SearchBarProps) {
         type="submit"
         size="icon"
         variant="ghost"
-        className="absolute right-0 top-0 h-full px-3 text-slate-400 hover:text-violet-600"
+        className="absolute right-0 top-0 h-full px-3 text-faint hover:text-brand"
       >
         <Search className="h-4 w-4" />
         <span className="sr-only">Search</span>
