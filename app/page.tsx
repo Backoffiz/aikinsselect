@@ -88,11 +88,12 @@ export default async function HomePage() {
                   key={product.id}
                   title={product.name}
                   category={product.category_name || "Products"}
-                  image="/placeholder.svg?height=300&width=300"
+                  image={product.image_url || "/placeholder.svg?height=300&width=300"}
                   rating={product.rating || 4.5}
                   reviewCount={Math.floor(Math.random() * 800) + 200}
                   price={product.price ? `$${Number(product.price).toFixed(2)}` : "Check Price"}
                   bestPick={product.is_best_pick === 1}
+                  affiliateUrl={product.affiliate_url}
                 />
               )) : (
                 <>
