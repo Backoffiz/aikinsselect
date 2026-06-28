@@ -140,11 +140,20 @@ export default async function CategoryPage({ params }: Props) {
                   </div>
                 )}
                 <h3 className="font-semibold text-slate-900">{product.name}</h3>
+                {product.description && (
+                  <p className="text-sm text-slate-600 mt-1 line-clamp-3">{product.description}</p>
+                )}
                 <div className="flex items-center justify-between mt-2">
                   {product.price ? (
                     <span className="font-bold text-violet-600">${Number(product.price).toFixed(2)}</span>
                   ) : (
                     <span className="text-sm text-slate-400">Price TBD</span>
+                  )}
+                  {product.rating && (
+                    <div className="flex items-center gap-1">
+                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                      <span className="text-xs font-medium text-slate-600">{product.rating}</span>
+                    </div>
                   )}
                 </div>
                 {product.affiliate_url && (

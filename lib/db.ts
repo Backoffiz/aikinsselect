@@ -132,10 +132,10 @@ export async function getReviewsByCategory(categorySlug: string, limit = 20) {
 export async function getTrendingProducts(limit = 4) {
   return query(
     `SELECT p.*, c.name as category_name, c.slug as category_slug 
-     FROM products p 
-     LEFT JOIN categories c ON p.category_id = c.id 
-     WHERE p.is_trending = 1 
-     ORDER BY RANDOM() 
+     FROM products p
+     LEFT JOIN categories c ON p.category_id = c.id
+     WHERE p.is_trending = 1 AND p.status = 'published'
+     ORDER BY RANDOM()
      LIMIT ?`,
     [limit]
   )
@@ -144,10 +144,10 @@ export async function getTrendingProducts(limit = 4) {
 export async function getBestPicks(limit = 8) {
   return query(
     `SELECT p.*, c.name as category_name, c.slug as category_slug 
-     FROM products p 
-     LEFT JOIN categories c ON p.category_id = c.id 
-     WHERE p.is_best_pick = 1 
-     ORDER BY RANDOM() 
+     FROM products p
+     LEFT JOIN categories c ON p.category_id = c.id
+     WHERE p.is_best_pick = 1 AND p.status = 'published'
+     ORDER BY RANDOM()
      LIMIT ?`,
     [limit]
   )
@@ -156,9 +156,9 @@ export async function getBestPicks(limit = 8) {
 export async function getProductsByCategory(categorySlug: string, limit = 50) {
   return query(
     `SELECT p.*, c.name as category_name 
-     FROM products p 
-     JOIN categories c ON p.category_id = c.id 
-     WHERE c.slug = ?
+     FROM products p
+     JOIN categories c ON p.category_id = c.id
+     WHERE c.slug = ? AND p.status = 'published'
      ORDER BY p.is_best_pick DESC, p.name ASC
      LIMIT ?`,
     [categorySlug, limit]
@@ -191,9 +191,10 @@ export async function getProductsForReview(reviewSlug: string) {
 export async function getLatestProducts(limit = 12) {
   return query(
     `SELECT p.*, c.name as category_name, c.slug as category_slug 
-     FROM products p 
-     LEFT JOIN categories c ON p.category_id = c.id 
-     ORDER BY p.created_at DESC 
+     FROM products p
+     LEFT JOIN categories c ON p.category_id = c.id
+     WHERE p.status = 'published'
+     ORDER BY p.created_at DESC
      LIMIT ?`,
     [limit]
   )
@@ -203,10 +204,10 @@ export async function getLatestProducts(limit = 12) {
 export async function searchProducts(q: string, limit = 20) {
   return query(
     `SELECT p.*, c.name as category_name, c.slug as category_slug 
-     FROM products p 
-     LEFT JOIN categories c ON p.category_id = c.id 
-     WHERE p.name LIKE ? 
-     ORDER BY p.is_best_pick DESC, p.name ASC 
+     FROM products p
+     LEFT JOIN categories c ON p.category_id = c.id
+     WHERE p.name LIKE ? AND p.status = 'published'
+     ORDER BY p.is_best_pick DESC, p.name ASC
      LIMIT ?`,
     [`%${q}%`, limit]
   )
