@@ -10,6 +10,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'Browse Categories',
   description: 'Explore product categories — Tech, Home, Kitchen, Gaming, Fitness, Beauty, and more.',
+  alternates: { canonical: '/categories' },
 }
 
 export default async function CategoriesPage() {

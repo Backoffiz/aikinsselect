@@ -11,6 +11,7 @@ import type { Metadata } from 'next'
 export const metadata: Metadata = {
   title: 'All Reviews',
   description: 'Expert product reviews backed by research from Wirecutter, RTINGS, and real Reddit user feedback.',
+  alternates: { canonical: '/reviews' },
 }
 
 export default async function ReviewsPage() {

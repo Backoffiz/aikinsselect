@@ -34,5 +34,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }))
 
-  return [...staticPages, ...reviewPages, ...categoryPages]
+  // Product detail pages
+  const products = await getLatestProducts(5000)
+  const productPages: MetadataRoute.Sitemap = products.map((product: any) => ({
+    url: `${baseUrl}/products/${product.slug}`,
+    lastModified: new Date(product.updated_at || product.created_at || Date.now()),
+    changeFrequency: 'weekly' as const,
+    priority: 0.6,
+  }))
+
+  return [...staticPages, ...reviewPages, ...categoryPages, ...productPages]
 }

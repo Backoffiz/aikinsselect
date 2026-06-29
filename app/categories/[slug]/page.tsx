@@ -9,6 +9,8 @@ import { ProductCard } from '@/components/product-card'
 import { ArrowLeft } from 'lucide-react'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
+import { JsonLd } from '@/components/seo/json-ld'
+import { jsonLdGraph, breadcrumbNode, itemListNode } from '@/lib/seo'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -16,9 +18,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const category = await getCategoryBySlug(slug)
   if (!category) return { title: 'Category Not Found' }
+  const title = `Best ${category.name} Products`
+  const description = `Discover the best ${category.name.toLowerCase()} products — expert-reviewed and reader-approved.`
+  const canonical = `/categories/${slug}`
+  const ogImage = `/categories/${slug}.jpg`
   return {
-    title: `Best ${category.name} Products`,
-    description: `Discover the best ${category.name.toLowerCase()} products — expert-reviewed and reader-approved.`,
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { type: 'website', title, description, url: canonical, images: [{ url: ogImage }] },
+    twitter: { card: 'summary_large_image', title, description, images: [ogImage] },
   }
 }
 
@@ -35,8 +44,21 @@ export default async function CategoryPage({ params }: Props) {
   const bestPicks = products.filter((p: any) => p.is_best_pick === 1)
   const otherProducts = products.filter((p: any) => p.is_best_pick !== 1)
 
+  const canonicalPath = `/categories/${slug}`
+  const structuredData = jsonLdGraph([
+    breadcrumbNode([
+      { name: 'Home', url: '/' },
+      { name: 'Categories', url: '/categories' },
+      { name: category.name, url: canonicalPath },
+    ]),
+    products.length > 0
+      ? itemListNode(products, { name: `Best ${category.name} Products`, url: canonicalPath })
+      : null,
+  ])
+
   return (
     <div className="flex min-h-screen flex-col">
+      <JsonLd data={structuredData} />
       <SiteHeader />
       <main className="flex-1">
         {/* Category Hero */}

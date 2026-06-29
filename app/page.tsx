@@ -12,6 +12,13 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Clock } from "lucide-react"
 import { getPublishedReviews, getCategories, getTrendingProducts, getStats } from "@/lib/db"
+import type { Metadata } from "next"
+import { JsonLd } from "@/components/seo/json-ld"
+import { jsonLdGraph, organizationNode, websiteNode } from "@/lib/seo"
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+}
 
 // Category icon mapping
 const CATEGORY_ICONS: Record<string, string> = {
@@ -37,6 +44,7 @@ export default async function HomePage() {
 
   return (
     <div className="flex min-h-screen flex-col">
+      <JsonLd data={jsonLdGraph([organizationNode(), websiteNode()])} />
       <SiteHeader />
       <main className="flex-1">
         {/* Hero */}

@@ -8,6 +8,8 @@ import { ArrowLeft, ArrowRight, Shield, Activity, ChevronRight, ThumbsUp, AlertT
 import { getReviewBySlug, getProductsForReview, getPublishedReviews } from "@/lib/db"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
+import { JsonLd } from "@/components/seo/json-ld"
+import { jsonLdGraph, organizationNode, breadcrumbNode, itemListNode } from "@/lib/seo"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -15,9 +17,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const review = await getReviewBySlug(slug)
   if (!review) return { title: 'Review Not Found' }
+  const description = review.subtitle || `${review.title} - Expert review by Aikins Select`
+  const ogImage = review.category_slug ? `/categories/${review.category_slug}.jpg` : '/og-image.jpg'
+  const canonical = `/reviews/${slug}`
+  const published = review.published_at ? new Date(review.published_at) : null
+  const publishedTime = published && !isNaN(published.getTime()) ? published.toISOString() : undefined
   return {
     title: review.title,
-    description: review.subtitle || `${review.title} - Expert review by Aikins Select`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: 'article',
+      title: review.title,
+      description,
+      url: canonical,
+      images: [{ url: ogImage }],
+      ...(publishedTime ? { publishedTime } : {}),
+    },
+    twitter: { card: 'summary_large_image', title: review.title, description, images: [ogImage] },
   }
 }
 
@@ -96,12 +113,30 @@ function renderEditorialContent(content: string): string {
     .replace(/^(?!<[hlu])/gm, '')
 }
 
-const AWARD_LABELS: Record<number, string> = {
-  1: 'Best Overall',
-  2: 'Runner-Up',
-  3: 'Best Value',
-  4: 'Also Great',
-  5: 'Budget Pick',
+// Award labels are PRICE-AWARE (mirrors scraper/lib/scoring.ts). Products arrive
+// ordered by rank ascending. Rank #1 = Best Overall; the cheapest of the rest =
+// Budget Pick; the priciest = Premium Pick; #2 = Runner-Up; everything else = Also
+// Great. Keyed by product id so every render site agrees, and so "Budget Pick"
+// always lands on the genuinely cheapest contender — never just the 5th in the list.
+function buildAwardLabels(products: any[]): Record<string, string> {
+  const labels: Record<string, string> = {}
+  if (products.length === 0) return labels
+
+  const [best, ...rest] = products
+  labels[best.id] = 'Best Overall'
+
+  const priced = rest.filter((p) => Number(p.price) > 0)
+  if (priced.length) {
+    const cheapest = priced.reduce((a, b) => (Number(a.price) <= Number(b.price) ? a : b))
+    const dearest = priced.reduce((a, b) => (Number(a.price) >= Number(b.price) ? a : b))
+    labels[cheapest.id] = 'Budget Pick'
+    if (dearest.id !== cheapest.id) labels[dearest.id] = 'Premium Pick'
+  }
+
+  if (rest[0] && !labels[rest[0].id]) labels[rest[0].id] = 'Runner-Up'
+  for (const p of rest) if (!labels[p.id]) labels[p.id] = 'Also Great'
+
+  return labels
 }
 
 export default async function ReviewPage({ params }: Props) {
@@ -116,9 +151,26 @@ export default async function ReviewPage({ params }: Props) {
 
   const related = relatedReviews.filter((r: any) => r.slug !== slug).slice(0, 3)
   const topThree = products.slice(0, 3)
+  const awardLabels = buildAwardLabels(products)
+
+  const canonicalPath = `/reviews/${slug}`
+  const breadcrumbItems = [
+    { name: 'Home', url: '/' },
+    { name: 'Reviews', url: '/reviews' },
+    ...(review.category_name && review.category_slug
+      ? [{ name: review.category_name, url: `/categories/${review.category_slug}` }]
+      : []),
+    { name: review.title, url: canonicalPath },
+  ]
+  const structuredData = jsonLdGraph([
+    organizationNode(),
+    breadcrumbNode(breadcrumbItems),
+    products.length > 0 ? itemListNode(products, { name: review.title, url: canonicalPath }) : null,
+  ])
 
   return (
     <div className="flex min-h-screen flex-col bg-paper">
+      <JsonLd data={structuredData} />
       <SiteHeader />
       <main className="flex-1">
 
@@ -182,7 +234,7 @@ export default async function ReviewPage({ params }: Props) {
                         )}
                       </div>
                       <span className={`mt-3 rounded-pill px-3 py-1 text-[11px] font-bold uppercase tracking-wider ${i === 0 ? 'bg-brand text-white' : i === 1 ? 'bg-ink text-white' : 'bg-panel text-brand'}`}>
-                        {AWARD_LABELS[i + 1] || `#${i + 1}`}
+                        {awardLabels[p.id] || `#${i + 1}`}
                       </span>
                       <span className="mt-1.5 max-w-[120px] text-center text-[12px] font-semibold leading-tight text-ink">
                         {p.name}
@@ -212,7 +264,7 @@ export default async function ReviewPage({ params }: Props) {
                     >
                       <div className="px-6 pt-5">
                         <span className={`inline-block rounded-pill px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider ${i === 0 ? 'bg-brand text-white' : i === 1 ? 'bg-ink text-white' : 'border border-card-edge bg-panel text-brand'}`}>
-                          {AWARD_LABELS[i + 1]}
+                          {awardLabels[product.id]}
                         </span>
                       </div>
 
@@ -288,7 +340,7 @@ export default async function ReviewPage({ params }: Props) {
               {products.map((product: any, i: number) => {
                 const pros = parseProsConsJSON(product.pros)
                 const cons = parseProsConsJSON(product.cons)
-                const label = AWARD_LABELS[product.rank || i + 1] || `Pick #${i + 1}`
+                const label = awardLabels[product.id] || `Pick #${i + 1}`
 
                 return (
                   <div key={product.id} className="mb-14">
@@ -481,7 +533,7 @@ export default async function ReviewPage({ params }: Props) {
                       className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-[13px] transition-colors hover:bg-panel"
                     >
                       <span className="truncate text-muted-ink transition-colors group-hover:text-ink">
-                        {AWARD_LABELS[i + 1] || `Pick #${i + 1}`}
+                        {awardLabels[p.id] || `Pick #${i + 1}`}
                       </span>
                       <ChevronRight className="h-3.5 w-3.5 shrink-0 text-card-edge transition-colors group-hover:text-brand" />
                     </a>
