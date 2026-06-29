@@ -9,7 +9,8 @@
     "deploy": "npm run pages:build && wrangler pages deploy",
     "dev": "next dev",
     "lint": "eslint .",
-    "start": "next start"
+    "start": "next start",
+    "validate-catalog": "node scripts/validate-catalog.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
