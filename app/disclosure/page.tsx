@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "Affiliate Disclosure",
   description: "Aikins Select affiliate disclosure — how we earn revenue and maintain editorial independence.",
+  alternates: { canonical: "/disclosure" },
 }
 
 export default function DisclosurePage() {

@@ -5,6 +5,7 @@ import type { Metadata } from "next"
 export const metadata: Metadata = {
   title: "About Us",
   description: "Learn about Aikins Select and our AI-powered product review methodology.",
+  alternates: { canonical: "/about" },
 }
 
 export default function AboutPage() {

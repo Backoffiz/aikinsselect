@@ -14,6 +14,8 @@ import {
   getAlternativeProducts,
   getReviewForProduct,
 } from '@/lib/db'
+import { JsonLd } from '@/components/seo/json-ld'
+import { jsonLdGraph, organizationNode, breadcrumbNode, productNode } from '@/lib/seo'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -21,11 +23,23 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params
   const product = await getProductBySlug(slug)
   if (!product) return { title: 'Product Not Found' }
+  const description =
+    product.description ||
+    `${product.name} — expert review, specs, and the best price from Aikins Select.`
+  const canonical = `/products/${slug}`
+  const ogImage = product.image_url || '/og-image.jpg'
   return {
     title: product.name,
-    description:
-      product.description ||
-      `${product.name} — expert review, specs, and the best price from Aikins Select.`,
+    description,
+    alternates: { canonical },
+    openGraph: {
+      type: 'website',
+      title: product.name,
+      description,
+      url: canonical,
+      images: [{ url: ogImage }],
+    },
+    twitter: { card: 'summary_large_image', title: product.name, description, images: [ogImage] },
   }
 }
 
@@ -95,8 +109,23 @@ export default async function ProductPage({ params }: Props) {
 
   const verdict = linkedReview?.mini_review || product.description || null
 
+  const canonicalPath = `/products/${slug}`
+  const breadcrumbItems = [
+    { name: 'Home', url: '/' },
+    ...(product.category_name && product.category_slug
+      ? [{ name: product.category_name, url: `/categories/${product.category_slug}` }]
+      : []),
+    { name: product.name, url: canonicalPath },
+  ]
+  const structuredData = jsonLdGraph([
+    organizationNode(),
+    breadcrumbNode(breadcrumbItems),
+    productNode({ ...product, description: product.description || verdict || undefined }),
+  ])
+
   return (
     <div className="flex min-h-screen flex-col bg-paper">
+      <JsonLd data={structuredData} />
       <SiteHeader />
       <main className="flex-1 pb-24">
         <div className="container px-4 pt-6 md:px-6">

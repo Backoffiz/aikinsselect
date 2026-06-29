@@ -95,11 +95,12 @@ export async function getPublishedReviews(limit = 20) {
 
 export async function getFeaturedReview() {
   const results = await query(
-    `SELECT r.*, c.name as category_name, c.slug as category_slug 
-     FROM reviews r 
-     LEFT JOIN categories c ON r.category_id = c.id 
-     WHERE r.status = 'published' 
-     ORDER BY r.is_featured DESC, r.published_at DESC 
+    `SELECT r.*, c.name as category_name, c.slug as category_slug,
+            (SELECT COUNT(*) FROM review_products rp WHERE rp.review_id = r.id) as product_count
+     FROM reviews r
+     LEFT JOIN categories c ON r.category_id = c.id
+     WHERE r.status = 'published'
+     ORDER BY r.is_featured DESC, r.published_at DESC
      LIMIT 1`
   )
   return results[0] || null

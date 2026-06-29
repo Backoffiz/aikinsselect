@@ -12,7 +12,13 @@ type Props = { searchParams: Promise<{ q?: string }> }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
   const { q } = await searchParams
-  return { title: q ? `Search: ${q}` : 'Search' }
+  return {
+    title: q ? `Search: ${q}` : 'Search',
+    // Result pages are thin/duplicate — keep them out of the index but let crawlers
+    // follow through to the products & reviews they link to.
+    robots: { index: false, follow: true },
+    alternates: { canonical: '/search' },
+  }
 }
 
 export default async function SearchPage({ searchParams }: Props) {
