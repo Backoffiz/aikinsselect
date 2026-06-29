@@ -54,6 +54,8 @@ async function d1(sql, params = []) {
 
 // --- config ----------------------------------------------------------------
 const MIN_PICKS = 3 // a published "best X" review should compare at least this many products
+const PRICE_FLOOR = 15 // USD; a published price below this is almost always a bad scraped value
+const PLACEHOLDER_RATING_MIN = 10 // N+ products sharing one exact rating == fabricated placeholder
 
 /**
  * Per-review DENY tokens: substrings that must NOT appear in a linked product's name.
@@ -147,7 +149,11 @@ async function main() {
     }
   }
 
-  const products = await d1(`SELECT name, slug FROM products WHERE status = 'published'`)
+  const linkedIds = new Set((await d1(`SELECT DISTINCT product_id FROM review_products`)).map((r) => r.product_id))
+  const products = await d1(`SELECT id, name, slug, rating, price, asin, availability FROM products WHERE status = 'published'`)
+  const ratingCounts = {}
+  let missingPriceOnPick = 0
+  let missingAvailOnAsin = 0
   for (const p of products) {
     if (slugLooksLikeProse(p.slug)) {
       add('WARN', 'junk-slug', `"${p.name}" has a prose-fragment slug: ${p.slug}`)
@@ -156,6 +162,31 @@ async function main() {
     if (brandsInName.length >= 2) {
       add('WARN', 'mangled-name', `"${p.name}" contains multiple brands (${brandsInName.join(', ')}) — likely two products merged`)
     }
+    // rating: must be a real 0–5 score, never a uniform placeholder
+    if (p.rating != null) {
+      if (p.rating <= 0 || p.rating > 5) {
+        add('ERROR', 'rating-range', `"${p.name}" has out-of-range rating ${p.rating}`)
+      }
+      ratingCounts[p.rating] = (ratingCounts[p.rating] || 0) + 1
+    }
+    // price sanity
+    if (p.price != null && p.price < PRICE_FLOOR) {
+      add('WARN', 'price-suspect', `"${p.name}" has an implausibly low price ($${p.price})`)
+    }
+    if (linkedIds.has(p.id) && p.price == null) missingPriceOnPick++
+    if (p.asin && (p.availability == null || p.availability === 'unknown')) missingAvailOnAsin++
+  }
+  // placeholder rating: many products sharing one exact value is a fabricated default, not a score
+  for (const [val, count] of Object.entries(ratingCounts)) {
+    if (count >= PLACEHOLDER_RATING_MIN) {
+      add('ERROR', 'placeholder-rating', `${count} products all rated exactly ${val} — looks like a fabricated placeholder, not a computed score`)
+    }
+  }
+  if (missingPriceOnPick > 0) {
+    add('WARN', 'pick-no-price', `${missingPriceOnPick} review-linked product(s) have no price (shown as a pick without a price)`)
+  }
+  if (missingAvailOnAsin > 0) {
+    add('WARN', 'stale-availability', `${missingAvailOnAsin} product(s) with an ASIN have no availability — run the PA-API sync worker`)
   }
 
   // --- report ---
