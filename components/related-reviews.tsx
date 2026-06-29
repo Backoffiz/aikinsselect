@@ -12,7 +12,7 @@ export function RelatedReviews() {
             <h2 className="text-3xl font-bold tracking-tight">Related Reviews</h2>
             <p className="text-muted-foreground">You might also be interested in these reviews</p>
           </div>
-          <Link href="/reviews" className="hidden sm:flex items-center text-primary font-medium">
+          <Link href="/reviews" className="hidden sm:flex items-center text-brand font-semibold">
             View all reviews
             <ArrowRight className="ml-1 h-4 w-4" />
           </Link>

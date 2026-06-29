@@ -9,19 +9,20 @@ export const metadata: Metadata = {
 
 export default function DisclosurePage() {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-paper">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-12 max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold text-slate-900 mb-2">Affiliate Disclosure</h1>
-        <p className="text-sm text-slate-400 mb-8">Last updated: February 24, 2026</p>
+      <main className="flex-1 container px-4 py-12 md:py-16 max-w-3xl mx-auto">
+        <p className="text-[11px] font-bold uppercase tracking-wider text-brand">Legal</p>
+        <h1 className="mt-2 mb-2 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">Affiliate Disclosure</h1>
+        <p className="mb-8 text-sm text-faint">Last updated: February 24, 2026</p>
 
-        <div className="prose prose-slate max-w-none space-y-6 text-slate-600">
+        <div className="space-y-6 leading-relaxed text-body">
           <p className="text-lg">
             Aikins Select is reader-supported. When you buy products through links on our site,
             we may earn an affiliate commission. Here&apos;s what that means for you.
           </p>
 
-          <h2 className="text-xl font-bold text-slate-900 mt-8">How Affiliate Links Work</h2>
+          <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-ink">How Affiliate Links Work</h2>
           <p>
             Some links on Aikins Select are &quot;affiliate links.&quot; This means if you click on a link
             and purchase the product, we receive a small commission from the retailer. This
@@ -29,7 +30,7 @@ export default function DisclosurePage() {
             you use our link or go directly to the store.
           </p>
 
-          <h2 className="text-xl font-bold text-slate-900 mt-8">Amazon Associates Program</h2>
+          <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-ink">Amazon Associates Program</h2>
           <p>
             Aikins Select is a participant in the <strong>Amazon Services LLC Associates Program</strong>,
             an affiliate advertising program designed to provide a means for sites to earn advertising
@@ -37,7 +38,7 @@ export default function DisclosurePage() {
             qualifying purchases.
           </p>
 
-          <h2 className="text-xl font-bold text-slate-900 mt-8">Our Editorial Independence</h2>
+          <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-ink">Our Editorial Independence</h2>
           <p>
             Affiliate relationships <strong>never influence our recommendations</strong>. Our reviews
             are based on independent research, expert source analysis, and real user feedback.
@@ -49,24 +50,24 @@ export default function DisclosurePage() {
             potential affiliate revenue. Your trust is more valuable to us than any commission.
           </p>
 
-          <h2 className="text-xl font-bold text-slate-900 mt-8">Other Affiliate Partners</h2>
+          <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-ink">Other Affiliate Partners</h2>
           <p>
             In addition to Amazon, we may partner with other retailers and affiliate networks
             including but not limited to Best Buy, Walmart, ShareASale, and brand-specific
             affiliate programs. The same editorial standards apply to all partnerships.
           </p>
 
-          <h2 className="text-xl font-bold text-slate-900 mt-8">Why We Use Affiliate Links</h2>
+          <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-ink">Why We Use Affiliate Links</h2>
           <p>
             Affiliate commissions help us fund our research, maintain the site, and continue
             providing free product recommendations. Without affiliate revenue, we would not
             be able to offer this service.
           </p>
 
-          <h2 className="text-xl font-bold text-slate-900 mt-8">Questions?</h2>
+          <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-ink">Questions?</h2>
           <p>
             If you have questions about our affiliate relationships, please contact us at{" "}
-            <a href="mailto:hello@aikinsselect.com" className="text-violet-600 hover:underline">hello@aikinsselect.com</a>.
+            <a href="mailto:hello@aikinsselect.com" className="text-brand hover:underline">hello@aikinsselect.com</a>.
           </p>
         </div>
       </main>

@@ -13,7 +13,7 @@ export function CategoryCard({ title, icon, count }: CategoryCardProps) {
   return (
     <Link
       href={`/categories/${slug}`}
-      className="group relative overflow-hidden rounded-lg border bg-white transition-all hover:shadow-md"
+      className="group relative overflow-hidden rounded border border-card-edge bg-white transition-all hover:shadow-card-hover"
     >
       <div className="relative aspect-square overflow-hidden">
         <Image
@@ -22,9 +22,9 @@ export function CategoryCard({ title, icon, count }: CategoryCardProps) {
           fill
           className="object-cover transition-transform group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-deep/75 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
-          <h3 className="text-sm font-bold text-white drop-shadow-sm">{title}</h3>
+          <h3 className="font-serif text-base font-medium text-white drop-shadow-sm">{title}</h3>
           <p className="text-xs text-white/80">{count} products</p>
         </div>
       </div>

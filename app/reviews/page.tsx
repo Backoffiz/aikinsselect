@@ -5,7 +5,6 @@ import Image from 'next/image'
 import { getPublishedReviews } from '@/lib/db'
 import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
-import { Badge } from '@/components/ui/badge'
 import { Clock } from 'lucide-react'
 import type { Metadata } from 'next'
 
@@ -18,12 +17,13 @@ export default async function ReviewsPage() {
   const reviews = await getPublishedReviews(50)
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-paper">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-8 md:py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">All Reviews</h1>
-          <p className="text-slate-600 mt-2">
+      <main className="flex-1 container px-4 py-12 md:py-16">
+        <div className="mb-10">
+          <p className="text-[11px] font-bold uppercase tracking-wider text-brand">Reviews</p>
+          <h1 className="mt-2 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">All Reviews</h1>
+          <p className="mt-3 max-w-2xl text-lg text-muted-ink">
             Expert product reviews backed by research from Wirecutter, CNN Underscored, RTINGS, and real Reddit user feedback.
           </p>
         </div>
@@ -34,46 +34,46 @@ export default async function ReviewsPage() {
               <Link
                 key={review.id}
                 href={`/reviews/${review.slug}`}
-                className="group block rounded-lg border border-slate-200 bg-white overflow-hidden transition-all hover:shadow-lg hover:border-violet-200"
+                className="group block overflow-hidden rounded-[5px] border border-card-edge bg-white transition-all hover:shadow-card-hover"
               >
-                <div className="aspect-video bg-gradient-to-br from-violet-100 to-purple-50 relative overflow-hidden">
+                <div className="relative aspect-video overflow-hidden bg-paper-deep">
                   {review.category_slug ? (
                     <Image
                       src={`/categories/${review.category_slug}.jpg`}
                       alt={review.title}
                       fill
-                      className="object-cover group-hover:scale-105 transition-transform"
+                      className="object-cover transition-transform group-hover:scale-105"
                     />
                   ) : (
-                    <div className="flex items-center justify-center h-full">
-                      <span className="text-4xl">📝</span>
+                    <div className="flex h-full items-center justify-center p-6">
+                      <span className="text-center font-serif text-lg text-muted-ink">{review.title}</span>
                     </div>
                   )}
                 </div>
                 <div className="p-5">
-                  <div className="flex items-center gap-2 mb-2">
+                  <div className="mb-2 flex items-center gap-3">
                     {review.category_name && (
-                      <Badge className="bg-violet-100 text-violet-700 text-xs">{review.category_name}</Badge>
+                      <span className="text-[11px] font-bold uppercase tracking-wider text-brand">{review.category_name}</span>
                     )}
                     {review.published_at && (
-                      <span className="text-xs text-slate-400 flex items-center">
+                      <span className="flex items-center text-xs text-faint">
                         <Clock className="mr-1 h-3 w-3" />
                         {new Date(review.published_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </span>
                     )}
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900 group-hover:text-violet-600 transition-colors">
+                  <h2 className="font-serif text-xl font-medium leading-snug text-ink transition-colors group-hover:text-brand">
                     {review.title}
                   </h2>
                   {review.subtitle && (
-                    <p className="mt-2 text-sm text-slate-600 line-clamp-2">{review.subtitle}</p>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-ink line-clamp-2">{review.subtitle}</p>
                   )}
                 </div>
               </Link>
             ))}
           </div>
         ) : (
-          <p className="text-center text-slate-500 py-12">No reviews published yet. Check back soon!</p>
+          <p className="py-12 text-center text-faint">No reviews published yet. Check back soon!</p>
         )}
       </main>
       <SiteFooter />

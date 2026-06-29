@@ -23,7 +23,7 @@ export function ProductComparison({ products }: ProductComparisonProps) {
       <div className="flex items-center">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="relative">
-            <Star className={`h-4 w-4 ${i < rating ? "fill-primary text-primary" : "fill-muted text-muted"}`} />
+            <Star className={`h-4 w-4 ${i < rating ? "fill-star text-star" : "fill-hairline text-hairline"}`} />
           </div>
         ))}
       </div>
