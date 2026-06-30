@@ -81,13 +81,28 @@ export async function getCategoryBySlug(slug: string) {
 }
 
 // --- Reviews ---
+//
+// Review cards have no dedicated photo, so each card's image is, in order of
+// preference: an explicitly-set hero_image, else the image of the review's
+// top-ranked product (a real per-review image), else (at render time) the
+// category photo. Without this, every review in a category showed the SAME
+// category image (e.g. all 8 tech reviews shared /categories/tech.jpg).
+const REVIEW_CARD_IMAGE = `COALESCE(
+  NULLIF(r.hero_image, ''),
+  (SELECT p.image_url FROM review_products rp
+     JOIN products p ON p.id = rp.product_id
+     WHERE rp.review_id = r.id AND p.image_url IS NOT NULL AND p.image_url != ''
+     ORDER BY rp.rank LIMIT 1)
+)`
+
 export async function getPublishedReviews(limit = 20) {
   return query(
-    `SELECT r.*, c.name as category_name, c.slug as category_slug 
-     FROM reviews r 
-     LEFT JOIN categories c ON r.category_id = c.id 
-     WHERE r.status = 'published' 
-     ORDER BY r.published_at DESC 
+    `SELECT r.*, c.name as category_name, c.slug as category_slug,
+            ${REVIEW_CARD_IMAGE} as card_image
+     FROM reviews r
+     LEFT JOIN categories c ON r.category_id = c.id
+     WHERE r.status = 'published'
+     ORDER BY r.published_at DESC
      LIMIT ?`,
     [limit]
   )
@@ -96,6 +111,7 @@ export async function getPublishedReviews(limit = 20) {
 export async function getFeaturedReview() {
   const results = await query(
     `SELECT r.*, c.name as category_name, c.slug as category_slug,
+            ${REVIEW_CARD_IMAGE} as card_image,
             (SELECT COUNT(*) FROM review_products rp WHERE rp.review_id = r.id) as product_count
      FROM reviews r
      LEFT JOIN categories c ON r.category_id = c.id
