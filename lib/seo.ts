@@ -71,6 +71,21 @@ export function breadcrumbNode(items: { name: string; url: string }[]) {
   }
 }
 
+/** Map our `availability` column to a schema.org URL. Drives the Offer honestly instead of
+ *  hardcoding InStock — an out-of-stock/unavailable product must not advertise InStock. */
+function availabilitySchema(a?: string | null): string {
+  switch (a) {
+    case 'out_of_stock':
+      return 'https://schema.org/OutOfStock'
+    case 'unavailable':
+      return 'https://schema.org/Discontinued'
+    default:
+      // 'in_stock', null, or legacy 'unknown' — InStock is the safe default (an Offer is only
+      // emitted when a real price exists, which today only happens via the PA-API sync).
+      return 'https://schema.org/InStock'
+  }
+}
+
 /**
  * A schema.org Product node built from a DB product row. Includes an Offer when a
  * real price exists and an editorial Review when a real rating exists — both are
@@ -101,7 +116,7 @@ export function productNode(p: any, opts: { includeReview?: boolean } = {}) {
       '@type': 'Offer',
       price: price.toFixed(2),
       priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
+      availability: availabilitySchema(p.availability),
       ...(buyUrl ? { url: buyUrl } : {}),
     }
   }

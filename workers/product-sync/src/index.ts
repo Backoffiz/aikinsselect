@@ -134,6 +134,13 @@ async function refresh(env: Env) {
       if (it.price !== undefined) { sets.push('price = ?'); params.push(it.price) }
       if (it.image) { sets.push('image_url = ?'); params.push(it.image) }
       sets.push('availability = ?'); params.push(it.available ? 'in_stock' : 'out_of_stock')
+      // PA-API confirmed this ASIN buyable → canonicalize the buy link to the verified /dp
+      // deep-link. The generator stores a never-dead search-url fallback for unverified ASINs;
+      // this upgrades those (and any stale URL) to the exact listing once it's confirmed live.
+      if (it.available) {
+        sets.push('amazon_url = ?'); params.push(`https://www.amazon.com/dp/${it.asin}`)
+        sets.push('affiliate_url = ?'); params.push(affiliateUrl(env, it.asin))
+      }
       params.push(it.asin)
       await d1run(env, `UPDATE products SET ${sets.join(', ')} WHERE asin = ? AND status = 'published'`, params)
       if (!it.available) outOfStock++
@@ -155,6 +162,24 @@ async function refresh(env: Env) {
   return { checked: rows.length, updated, outOfStock, missing, archived }
 }
 
+// Concrete product seeds per category — far better than searching the bare category name
+// ("Tech" → random items). Coarse mirror of the generator's topic taxonomy; the worker only
+// inserts NEW ASINs (deduped), so a few seeds per category is enough to keep the catalog growing.
+const GATHER_KEYWORDS: Record<string, string[]> = {
+  tech: ['wireless earbuds', 'laptop', 'smartwatch', 'tablet', 'bluetooth speaker'],
+  home: ['robot vacuum', 'air purifier', 'cordless vacuum', 'space heater', 'security camera'],
+  kitchen: ['air fryer', 'blender', 'espresso machine', 'coffee maker', 'stand mixer'],
+  fitness: ['fitness tracker', 'running shoes', 'adjustable dumbbells', 'yoga mat', 'treadmill'],
+  beauty: ['hair dryer', 'electric shaver', 'electric toothbrush', 'beard trimmer', 'curling iron'],
+  travel: ['carry on luggage', 'travel backpack', 'packing cubes', 'travel pillow', 'travel adapter'],
+  pets: ['automatic cat feeder', 'dog gps tracker', 'pet hair vacuum', 'dog bed', 'cat litter box'],
+  office: ['office chair', 'standing desk', 'webcam', 'monitor', 'mechanical keyboard'],
+  gaming: ['gaming headset', 'gaming mouse', 'gaming monitor', 'gaming keyboard', 'gaming chair'],
+  outdoors: ['tent', 'sleeping bag', 'hiking boots', 'cooler', 'camping stove'],
+  baby: ['baby monitor', 'car seat', 'stroller', 'baby carrier', 'high chair'],
+  auto: ['dash cam', 'jump starter', 'tire inflator', 'car phone mount', 'car vacuum'],
+}
+
 // ---- gather ----
 async function gather(env: Env) {
   const perCatLimit = Number(env.GATHER_PER_CATEGORY ?? '3')
@@ -164,29 +189,33 @@ async function gather(env: Env) {
 
   for (const cat of cats) {
     let added = 0
-    let json: any = null
-    try {
-      json = await paapi(env, 'SearchItems', { Keywords: cat.name, SearchIndex: 'All', ItemCount: 10, Resources: GET_RESOURCES })
-    } catch (e) {
-      console.error('search', cat.name, String(e).slice(0, 120))
-    }
-    await sleep(1100)
-    const items: any[] = json?.SearchResult?.Items ?? []
-    for (const raw of items) {
+    const seeds = GATHER_KEYWORDS[cat.slug] ?? [cat.name]
+    for (const kw of seeds) {
       if (added >= perCatLimit) break
-      const it = parseItem(raw)
-      if (!it.asin || !it.title) { skipped++; continue }
-      if ((await d1(env, `SELECT 1 FROM products WHERE asin = ? LIMIT 1`, [it.asin])).length) { skipped++; continue }
-      let slug = slugify(it.title)
-      if ((await d1(env, `SELECT 1 FROM products WHERE slug = ? LIMIT 1`, [slug])).length) slug = `${slug}-${it.asin.slice(-4).toLowerCase()}`
-      await d1run(
-        env,
-        `INSERT INTO products (id, name, slug, category_id, brand, price, image_url, amazon_url, affiliate_url, asin, availability, is_best_pick, is_trending, status, last_checked_at, created_at, updated_at)
-         VALUES (?,?,?,?,?,?,?,?,?,?,?,0,0,'published',datetime('now'),datetime('now'),datetime('now'))`,
-        [newId(), it.title, slug, cat.id, it.brand ?? null, it.price ?? null, it.image ?? null,
-         `https://www.amazon.com/dp/${it.asin}`, affiliateUrl(env, it.asin), it.asin, it.available ? 'in_stock' : 'out_of_stock'],
-      )
-      inserted++; added++
+      let json: any = null
+      try {
+        json = await paapi(env, 'SearchItems', { Keywords: kw, SearchIndex: 'All', ItemCount: 10, Resources: GET_RESOURCES })
+      } catch (e) {
+        console.error('search', kw, String(e).slice(0, 120))
+      }
+      await sleep(1100)
+      const items: any[] = json?.SearchResult?.Items ?? []
+      for (const raw of items) {
+        if (added >= perCatLimit) break
+        const it = parseItem(raw)
+        if (!it.asin || !it.title) { skipped++; continue }
+        if ((await d1(env, `SELECT 1 FROM products WHERE asin = ? LIMIT 1`, [it.asin])).length) { skipped++; continue }
+        let slug = slugify(it.title)
+        if ((await d1(env, `SELECT 1 FROM products WHERE slug = ? LIMIT 1`, [slug])).length) slug = `${slug}-${it.asin.slice(-4).toLowerCase()}`
+        await d1run(
+          env,
+          `INSERT INTO products (id, name, slug, category_id, brand, price, image_url, amazon_url, affiliate_url, asin, availability, is_best_pick, is_trending, status, last_checked_at, created_at, updated_at)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,0,0,'published',datetime('now'),datetime('now'),datetime('now'))`,
+          [newId(), it.title, slug, cat.id, it.brand ?? null, it.price ?? null, it.image ?? null,
+           `https://www.amazon.com/dp/${it.asin}`, affiliateUrl(env, it.asin), it.asin, it.available ? 'in_stock' : 'out_of_stock'],
+        )
+        inserted++; added++
+      }
     }
     perCat[cat.slug] = added
   }
