@@ -95,6 +95,20 @@ const BRANDS = [
 const SLUG_STOPWORDS = ['has', 'have', 'claims', 'that', 'this', 'with', 'and', 'for', 'your',
   'its', 'are', 'was', 'were', 'will', 'can', 'says', 'the', 'which', 'their', 'best']
 
+/**
+ * Signatures of a broken auto-generated article. The Gen-2 template generator emitted this exact
+ * boilerplate sentence for every pick, and its "pick" names are prose fragments (e.g. "Apple iPads"
+ * as a running shoe). Placeholder phrases mark reviews whose picks were never filled in. When a
+ * review body contains any of these, the prose itself is garbage and the page can't match its
+ * products to its article no matter how the links are set — the article must be regenerated.
+ */
+const TEMPLATE_BOILERPLATE = 'consistently earns top marks from professional reviewers'
+const PLACEHOLDER_PICK = ['see our full recommendations', 'check back soon', 'coming soon', 'detailed picks']
+
+/** Generic model words that don't, on their own, distinguish two products in the same line. */
+const GENERIC_MODEL_WORDS = new Set(['pro', 'max', 'ultra', 'plus', 'mini', 'wireless', 'series',
+  'edition', 'smart', 'premium', 'cup', 'inch', 'oled', 'best', 'the', 'and', 'for'])
+
 const issues = []
 const add = (level, check, detail) => issues.push({ level, check, detail })
 
@@ -103,9 +117,29 @@ function slugLooksLikeProse(slug) {
   return tokens.some((t) => SLUG_STOPWORDS.includes(t))
 }
 
+/** Tokenize text on word boundaries, keeping model tokens like "9a", "s25", "xm5", "u8n". */
+function tokenizeText(s) {
+  return (s || '').replace(/<[^>]+>/g, ' ').replace(/&amp;/g, '&').toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ').trim().split(/\s+/).filter(Boolean)
+}
+
+/**
+ * The most distinctive ("anchor") token of a product name: a model token containing a digit
+ * (a55, s25, u8n, 67w) when present, else the longest non-generic word. This is what separates
+ * "Galaxy A55" from "Galaxy S25 Ultra" — the shared "samsung galaxy" prefix is not enough.
+ * Used to test whether a review's article actually mentions a product it links.
+ */
+function productAnchor(name) {
+  const toks = tokenizeText(name)
+  const digit = toks.find((t) => /\d/.test(t) && t.length >= 2)
+  if (digit) return digit
+  const alpha = toks.filter((t) => t.length >= 4 && !GENERIC_MODEL_WORDS.has(t)).sort((a, b) => b.length - a.length)
+  return alpha[0] || ''
+}
+
 // --- checks ----------------------------------------------------------------
 async function main() {
-  const reviews = await d1(`SELECT id, slug, title, status FROM reviews`)
+  const reviews = await d1(`SELECT id, slug, title, status, content FROM reviews`)
   const published = reviews.filter((r) => r.status === 'published')
 
   for (const r of published) {
@@ -145,6 +179,41 @@ async function main() {
         const lower = l.name.toLowerCase()
         const hit = deny.find((d) => lower.includes(d))
         if (hit) add('ERROR', 'type-mismatch', `${r.slug}: "${l.name}" looks wrong for this review (matched deny token "${hit}")`)
+      }
+    }
+
+    // Article ↔ products coherence. Two failure modes seen live:
+    //  (1) broken-article: the article PROSE is auto-generated garbage (template boilerplate or
+    //      unfilled placeholders), so its own "picks" are nonsense (e.g. "Apple iPads" as a running
+    //      shoe). The article needs regenerating regardless of which products are linked.
+    //  (2) article-link-mismatch: the prose is fine but a linked product is never mentioned in it —
+    //      i.e. the page shows a product the article doesn't actually recommend (e.g. a "best budget
+    //      smartphone" page showing the flagship Galaxy S25 Ultra).
+    const contentLower = (r.content || '').toLowerCase()
+    const brokenSignals = []
+    if (contentLower.includes(TEMPLATE_BOILERPLATE)) brokenSignals.push('template-generator boilerplate')
+    const ph = PLACEHOLDER_PICK.find((p) => contentLower.includes(p))
+    if (ph) brokenSignals.push(`placeholder text "${ph}"`)
+
+    if (brokenSignals.length) {
+      add('WARN', 'broken-article', `${r.slug}: article prose is auto-generated/garbage (${brokenSignals.join('; ')}) — regenerate the article`)
+    } else if (r.content) {
+      // Editorial articles (the current generator) legitimately don't name every minor pick —
+      // the product cards do that. So only flag a SYSTEMIC disconnect: the article names fewer
+      // than half its linked products, or doesn't name its own #1 pick. That still catches the
+      // real failure (a "best budget phone" article whose links are all flagships) without crying
+      // wolf over an "Also Great" the prose simply didn't mention.
+      const artStr = ' ' + tokenizeText(r.content).join(' ') + ' '
+      const named = (l) => {
+        const a = productAnchor(l.name)
+        return !a || a.length < 2 || artStr.includes(` ${a} `)
+      }
+      const withName = links.filter((l) => l.name)
+      const unnamed = withName.filter((l) => !named(l))
+      if (withName.length >= 3 && withName.length - unnamed.length < Math.ceil(withName.length / 2)) {
+        add('WARN', 'article-link-mismatch', `${r.slug}: article names only ${withName.length - unnamed.length}/${withName.length} linked products (missing: ${unnamed.map((l) => l.name).join(', ')}) — likely a stale/mismatched article`)
+      } else if (withName[0] && !named(withName[0])) {
+        add('WARN', 'article-link-mismatch', `${r.slug}: article never names its top pick "${withName[0].name}"`)
       }
     }
   }

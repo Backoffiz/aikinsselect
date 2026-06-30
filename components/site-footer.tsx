@@ -11,7 +11,7 @@ export function SiteFooter() {
           <div className="space-y-4">
             <h3 className="font-serif text-lg font-medium text-paper">Aikins Select</h3>
             <p className="text-sm text-paper/60">
-              Independent product reviews. We test so you buy the right one — once.
+              Independent product reviews. We review so you buy the right one — once.
             </p>
             <div className="flex space-x-2">
               <Button variant="ghost" size="icon" asChild className="text-paper/70 hover:text-brand-on-dark hover:bg-white/5">
@@ -43,7 +43,7 @@ export function SiteFooter() {
             <h3 className="text-sm font-semibold uppercase tracking-wide text-paper">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/reviews" className="text-paper/70 hover:text-brand-on-dark">Reviews</Link></li>
-              <li><Link href="/about" className="text-paper/70 hover:text-brand-on-dark">How we test</Link></li>
+              <li><Link href="/about" className="text-paper/70 hover:text-brand-on-dark">How we review</Link></li>
               {FEATURES.saved && (
                 <li><Link href="/saved" className="text-paper/70 hover:text-brand-on-dark">Saved items</Link></li>
               )}

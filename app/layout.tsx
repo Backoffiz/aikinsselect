@@ -3,6 +3,7 @@ import { Newsreader, Public_Sans } from 'next/font/google'
 import './globals.css'
 import { SavedProvider } from '@/components/providers/saved-provider'
 import { Toaster } from '@/components/ui/sonner'
+import { SITE_URL } from '@/lib/seo'
 
 const serif = Newsreader({
   subsets: ['latin'],
@@ -22,11 +23,11 @@ export const metadata: Metadata = {
     default: 'Aikins Select — Expert Product Reviews, Simplified',
     template: '%s | Aikins Select',
   },
-  description: 'We cross-reference Wirecutter, RTINGS, and Reddit to find the products that actually deliver. No fluff, just honest picks.',
-  metadataBase: new URL('https://aikinsselect.com'),
+  description: 'We cross-reference trusted expert reviews and real user feedback to find the products that actually deliver. No fluff, just honest picks.',
+  metadataBase: new URL(SITE_URL),
   openGraph: {
     title: 'Aikins Select — Expert Product Reviews, Simplified',
-    description: 'We cross-reference Wirecutter, RTINGS, and Reddit to find the products that actually deliver.',
+    description: 'We cross-reference trusted expert reviews and real user feedback to find the products that actually deliver.',
     siteName: 'Aikins Select',
     locale: 'en_US',
     type: 'website',
@@ -35,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Aikins Select — Expert Product Reviews',
-    description: 'We cross-reference Wirecutter, RTINGS, and Reddit to find the products that actually deliver.',
+    description: 'We cross-reference trusted expert reviews and real user feedback to find the products that actually deliver.',
     images: ['/og-image.jpg'],
   },
   robots: {

@@ -28,17 +28,17 @@ export default function AboutPage() {
             Every product recommendation on Aikins Select goes through a rigorous research process:
           </p>
           <ol className="list-decimal list-inside space-y-3 leading-relaxed text-body">
-            <li><strong>Expert Source Analysis</strong> — We cross-reference reviews from Wirecutter, RTINGS, Tom&apos;s Guide, and other trusted publications to understand expert consensus.</li>
-            <li><strong>Real User Feedback</strong> — We analyze hundreds of user reviews from Amazon, Reddit, and enthusiast forums to capture what everyday users actually experience.</li>
+            <li><strong>Expert Source Analysis</strong> — We cross-reference expert reviews and buying guides from trusted publications across the web to understand expert consensus.</li>
+            <li><strong>Real User Feedback</strong> — We analyze hundreds of real user reviews and community discussions to capture what everyday users actually experience.</li>
             <li><strong>AI-Powered Synthesis</strong> — Our AI research engine aggregates all this data to produce balanced, comprehensive reviews that highlight true strengths and weaknesses.</li>
             <li><strong>Independent Scoring</strong> — Each product receives an Aikins Select score based on performance, value, reliability, and user satisfaction across all sources.</li>
           </ol>
 
           <h2 className="mt-10 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">Why Trust Us?</h2>
           <p className="leading-relaxed text-body">
-            Unlike single-source reviews, we don&apos;t rely on one opinion. By synthesizing data from
-            5+ professional review sites and real user communities, we surface products that
-            consistently perform well — not just in lab tests, but in real life.
+            Unlike single-source reviews, we don&apos;t rely on one opinion. By synthesizing many
+            expert reviews and real user feedback, we surface products that
+            consistently earn praise — in everyday, real-world use.
           </p>
 
           <h2 className="mt-10 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">How We Make Money</h2>
