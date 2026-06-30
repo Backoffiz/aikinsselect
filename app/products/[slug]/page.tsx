@@ -16,6 +16,7 @@ import {
 } from '@/lib/db'
 import { JsonLd } from '@/components/seo/json-ld'
 import { jsonLdGraph, organizationNode, breadcrumbNode, productNode } from '@/lib/seo'
+import { FEATURES } from '@/lib/flags'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -270,7 +271,9 @@ export default async function ProductPage({ params }: Props) {
                       Check price at Amazon →
                     </a>
                   ) : null}
-                  <SaveHeartButton item={savedItem} variant="inline" className="w-full" />
+                  {FEATURES.saved && (
+                    <SaveHeartButton item={savedItem} variant="inline" className="w-full" />
+                  )}
                   <p className="mt-2.5 text-center text-[11.5px] text-faint">
                     We may earn a commission, at no cost to you.
                   </p>

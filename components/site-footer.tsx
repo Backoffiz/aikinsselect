@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { FEATURES } from "@/lib/flags"
 import { Facebook, Instagram, Twitter, Youtube } from "lucide-react"
 
 export function SiteFooter() {
@@ -43,7 +44,9 @@ export function SiteFooter() {
             <ul className="space-y-2 text-sm">
               <li><Link href="/reviews" className="text-paper/70 hover:text-brand-on-dark">Reviews</Link></li>
               <li><Link href="/about" className="text-paper/70 hover:text-brand-on-dark">How we test</Link></li>
-              <li><Link href="/saved" className="text-paper/70 hover:text-brand-on-dark">Saved items</Link></li>
+              {FEATURES.saved && (
+                <li><Link href="/saved" className="text-paper/70 hover:text-brand-on-dark">Saved items</Link></li>
+              )}
               <li><Link href="/disclosure" className="text-paper/70 hover:text-brand-on-dark">Affiliate Disclosure</Link></li>
             </ul>
           </div>

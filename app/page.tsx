@@ -12,6 +12,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Clock } from "lucide-react"
 import { getPublishedReviews, getCategories, getTrendingProducts, getStats } from "@/lib/db"
+import { FEATURES } from "@/lib/flags"
 import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo/json-ld"
 import { jsonLdGraph, organizationNode, websiteNode } from "@/lib/seo"
@@ -200,7 +201,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <Newsletter />
+        {FEATURES.newsletter && <Newsletter />}
       </main>
       <SiteFooter />
     </div>

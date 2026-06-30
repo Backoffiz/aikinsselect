@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { SaveHeartButton } from "@/components/saved/save-heart-button"
+import { FEATURES } from "@/lib/flags"
 import { Award, Star } from "lucide-react"
 
 interface ProductCardProps {
@@ -69,7 +70,7 @@ export function ProductCard({
             <Badge variant="deal" className="rounded-pill text-[10px] font-extrabold">-{savePct}%</Badge>
           </div>
         )}
-        {savedItem && <SaveHeartButton item={savedItem} />}
+        {FEATURES.saved && savedItem && <SaveHeartButton item={savedItem} />}
         {hasImage ? (
           <img src={image} alt={title} className="max-h-full max-w-full object-contain" loading="lazy" />
         ) : (
