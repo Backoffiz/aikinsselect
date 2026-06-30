@@ -166,15 +166,22 @@ export default async function HomePage() {
                   <Link href={`/reviews/${review.slug}`} className="absolute inset-0 z-10">
                     <span className="sr-only">View Review</span>
                   </Link>
-                  <div className="relative aspect-video overflow-hidden bg-paper-deep">
-                    {review.category_slug && (
+                  <div className="relative aspect-video overflow-hidden bg-gradient-to-b from-white to-paper-deep">
+                    {review.card_image ? (
+                      <Image
+                        src={review.card_image}
+                        alt={review.title}
+                        fill
+                        className="object-contain p-6 transition-transform group-hover:scale-105"
+                      />
+                    ) : review.category_slug ? (
                       <Image
                         src={`/categories/${review.category_slug}.jpg`}
                         alt={review.title}
                         fill
                         className="object-cover transition-transform group-hover:scale-105"
                       />
-                    )}
+                    ) : null}
                     <div className="absolute bottom-3 left-3 flex items-center gap-2">
                       <span className="inline-flex items-center gap-1 rounded-pill bg-paper/90 px-2.5 py-1 text-xs font-semibold text-ink backdrop-blur-sm">
                         <Clock className="h-3 w-3" />

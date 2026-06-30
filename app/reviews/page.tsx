@@ -37,8 +37,15 @@ export default async function ReviewsPage() {
                 href={`/reviews/${review.slug}`}
                 className="group block overflow-hidden rounded-[5px] border border-card-edge bg-white transition-all hover:shadow-card-hover"
               >
-                <div className="relative aspect-video overflow-hidden bg-paper-deep">
-                  {review.category_slug ? (
+                <div className="relative aspect-video overflow-hidden bg-gradient-to-b from-white to-paper-deep">
+                  {review.card_image ? (
+                    <Image
+                      src={review.card_image}
+                      alt={review.title}
+                      fill
+                      className="object-contain p-6 transition-transform group-hover:scale-105"
+                    />
+                  ) : review.category_slug ? (
                     <Image
                       src={`/categories/${review.category_slug}.jpg`}
                       alt={review.title}
