@@ -37,7 +37,7 @@ export function organizationNode() {
     url: SITE_URL,
     logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon.svg` },
     description:
-      'Independent product reviews. We cross-reference Wirecutter, RTINGS, and Reddit to find the products that actually deliver.',
+      'Independent product reviews. We cross-reference trusted expert reviews and real user feedback to find the products that actually deliver.',
   }
 }
 

@@ -3,7 +3,7 @@
 > Expert product reviews and buying guides, powered by thorough research and real user feedback.
 
 ## About
-Aikins Select is an independent product review site. We research products across multiple professional review sites and combine that with real user opinions from Reddit and other communities to provide balanced, trustworthy buying advice.
+Aikins Select is an independent product review site. We research products across many expert reviews and buying guides, and combine that with real user opinions from across the web to provide balanced, trustworthy buying advice.
 
 ## Content Types
 - Product Reviews: In-depth reviews with ratings, pros/cons, and verdicts

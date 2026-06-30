@@ -10,7 +10,7 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'All Reviews',
-  description: 'Expert product reviews backed by research from Wirecutter, RTINGS, and real Reddit user feedback.',
+  description: 'Expert product reviews backed by research across trusted expert sources and real user feedback.',
   alternates: { canonical: '/reviews' },
 }
 
@@ -25,7 +25,7 @@ export default async function ReviewsPage() {
           <p className="text-[11px] font-bold uppercase tracking-wider text-brand">Reviews</p>
           <h1 className="mt-2 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">All Reviews</h1>
           <p className="mt-3 max-w-2xl text-lg text-muted-ink">
-            Expert product reviews backed by research from Wirecutter, CNN Underscored, RTINGS, and real Reddit user feedback.
+            Expert product reviews backed by research across trusted expert sources and real user feedback.
           </p>
         </div>
 

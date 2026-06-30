@@ -39,7 +39,7 @@ export function RelatedReviews() {
               </div>
               <h3 className="mt-2 text-xl font-bold">The Best Noise Cancelling Headphones for 2023</h3>
               <p className="mt-2 line-clamp-2 text-muted-foreground">
-                We tested 18 pairs of noise cancelling headphones to find the best options for travel, work, and
+                We reviewed 18 pairs of noise cancelling headphones to find the best options for travel, work, and
                 everyday use.
               </p>
             </div>

@@ -37,9 +37,9 @@ export default async function HomePage() {
   ])
 
   const trustStats = [
-    { value: stats.products ? `${stats.products.toLocaleString()}+` : "1,400+", label: "products tested" },
-    { value: stats.reviews ? `${stats.reviews}+` : "120+", label: "buying guides" },
-    { value: stats.categories ? `${stats.categories}` : "12", label: "categories" },
+    { value: stats.products ? `${stats.products.toLocaleString()}+` : "—", label: "products reviewed" },
+    { value: stats.reviews ? `${stats.reviews}+` : "—", label: "buying guides" },
+    { value: stats.categories ? `${stats.categories}` : "—", label: "categories" },
     { value: "0", label: "paid placements", accent: true },
   ]
 
@@ -58,10 +58,10 @@ export default async function HomePage() {
                   <span className="text-xs font-bold uppercase tracking-[0.12em] text-brand">Independent product reviews</span>
                 </div>
                 <h1 className="max-w-[760px] font-serif text-4xl font-medium leading-[1.05] tracking-tight text-ink sm:text-5xl xl:text-6xl">
-                  We test thousands of products so you buy the right one — once.
+                  We review thousands of products so you buy the right one — once.
                 </h1>
                 <p className="mt-5 max-w-[560px] text-lg leading-relaxed text-muted-ink">
-                  No fluff, no paid placements. We cross-reference Wirecutter, RTINGS, and Reddit to find the products that actually deliver.
+                  No fluff, no paid placements. We cross-reference trusted expert reviews and real user feedback to find the products that actually deliver.
                 </p>
                 <div className="mt-7 flex flex-col gap-3 min-[400px]:flex-row min-[400px]:items-center">
                   <Button asChild variant="ink" size="lg" className="gap-1.5">
@@ -197,7 +197,7 @@ export default async function HomePage() {
                       {review.title}
                     </h3>
                     <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted-ink">
-                      {review.subtitle || 'Expert-researched product recommendations backed by Wirecutter, RTINGS, and Reddit.'}
+                      {review.subtitle || 'Expert-researched product recommendations backed by trusted reviews and real user feedback.'}
                     </p>
                   </div>
                 </div>
