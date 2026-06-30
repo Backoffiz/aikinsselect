@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Newsletter } from "@/components/newsletter"
 import { ArrowLeft, ArrowRight, Shield, Activity, ChevronRight, ThumbsUp, AlertTriangle, Zap, Target } from "lucide-react"
 import { getReviewBySlug, getProductsForReview, getPublishedReviews } from "@/lib/db"
+import { FEATURES } from "@/lib/flags"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo/json-ld"
@@ -580,7 +581,7 @@ export default async function ReviewPage({ params }: Props) {
           </section>
         )}
 
-        <Newsletter />
+        {FEATURES.newsletter && <Newsletter />}
       </main>
       <SiteFooter />
     </div>

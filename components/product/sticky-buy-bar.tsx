@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Star } from 'lucide-react'
 import { SaveHeartButton } from '@/components/saved/save-heart-button'
+import { FEATURES } from '@/lib/flags'
 import type { SavedItem } from '@/lib/saved/types'
 
 interface StickyBuyBarProps {
@@ -49,11 +50,13 @@ export function StickyBuyBar({ name, image, rating, price, affiliateUrl, item }:
         </div>
         <div className="flex items-center gap-3">
           <span className="hidden font-serif text-lg font-semibold tabular-nums text-paper sm:inline">{price}</span>
-          <SaveHeartButton
-            item={item}
-            variant="inline"
-            className="border-white/15 bg-white/5 px-3 py-2.5 text-paper hover:bg-white/10"
-          />
+          {FEATURES.saved && (
+            <SaveHeartButton
+              item={item}
+              variant="inline"
+              className="border-white/15 bg-white/5 px-3 py-2.5 text-paper hover:bg-white/10"
+            />
+          )}
           {affiliateUrl && (
             <a
               href={affiliateUrl}

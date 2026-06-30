@@ -229,27 +229,120 @@ export async function getLatestProducts(limit = 12) {
 }
 
 // --- Search ---
-export async function searchProducts(q: string, limit = 20) {
+//
+// The old search did `name LIKE '%<whole query>%'`, so any multi-word query
+// (e.g. "usb c cable") had to appear verbatim as one contiguous substring and
+// almost always returned nothing. Search now tokenizes the query and requires
+// EVERY token to match (AND), where each token may match ANY searchable field
+// (OR). Results are ordered by a lightweight relevance score. The catalog is
+// small (a few hundred rows) so tokenized LIKE is plenty fast — no FTS needed.
+
+/** Split a free-text query into up to 6 lowercased alphanumeric tokens. */
+function tokenize(q: string): string[] {
+  return q
+    .toLowerCase()
+    .split(/[^a-z0-9]+/i)
+    .filter(Boolean)
+    .slice(0, 6)
+}
+
+export async function searchProducts(q: string, limit = 24) {
+  const tokens = tokenize(q)
+  if (tokens.length === 0) return []
+  const phrase = `%${q.trim().toLowerCase()}%`
+
+  // AND across tokens, OR across fields. Each field is lower()'d so matching is
+  // case-insensitive; LIKE on a NULL column yields NULL (no match), which is fine.
+  const where = tokens
+    .map(
+      () => `(
+        lower(p.name) LIKE ? OR lower(p.brand) LIKE ? OR lower(p.model) LIKE ?
+        OR lower(p.description) LIKE ? OR lower(c.name) LIKE ?
+      )`
+    )
+    .join(' AND ')
+  const whereParams = tokens.flatMap((t) => Array(5).fill(`%${t}%`))
+
+  // Relevance: whole-phrase name hit first, then per-token name/brand/model hits,
+  // then a nudge for editor's best picks.
+  const order = `(
+    (CASE WHEN lower(p.name) LIKE ? THEN 100 ELSE 0 END)
+    + ${tokens.map(() => `(CASE WHEN lower(p.name) LIKE ? THEN 10 ELSE 0 END)`).join(' + ')}
+    + ${tokens
+      .map(() => `(CASE WHEN lower(p.brand) LIKE ? OR lower(p.model) LIKE ? THEN 5 ELSE 0 END)`)
+      .join(' + ')}
+    + (CASE WHEN p.is_best_pick = 1 THEN 8 ELSE 0 END)
+  )`
+  const orderParams = [
+    phrase,
+    ...tokens.map((t) => `%${t}%`), // name per token
+    ...tokens.flatMap((t) => [`%${t}%`, `%${t}%`]), // brand + model per token
+  ]
+
   return query(
-    `SELECT p.*, c.name as category_name, c.slug as category_slug 
+    `SELECT p.*, c.name as category_name, c.slug as category_slug
      FROM products p
      LEFT JOIN categories c ON p.category_id = c.id
-     WHERE p.name LIKE ? AND p.status = 'published'
-     ORDER BY p.is_best_pick DESC, p.name ASC
+     WHERE (${where}) AND p.status = 'published'
+     ORDER BY ${order} DESC, p.rating DESC, p.name ASC
      LIMIT ?`,
-    [`%${q}%`, limit]
+    [...whereParams, ...orderParams, limit]
   )
 }
 
-export async function searchReviews(q: string, limit = 20) {
+export async function searchReviews(q: string, limit = 12) {
+  const tokens = tokenize(q)
+  if (tokens.length === 0) return []
+  const phrase = `%${q.trim().toLowerCase()}%`
+
+  const where = tokens
+    .map(
+      () => `(
+        lower(r.title) LIKE ? OR lower(r.subtitle) LIKE ?
+        OR lower(r.excerpt) LIKE ? OR lower(r.content) LIKE ? OR lower(c.name) LIKE ?
+      )`
+    )
+    .join(' AND ')
+  const whereParams = tokens.flatMap((t) => Array(5).fill(`%${t}%`))
+
+  const order = `(
+    (CASE WHEN lower(r.title) LIKE ? THEN 100 ELSE 0 END)
+    + ${tokens.map(() => `(CASE WHEN lower(r.title) LIKE ? THEN 10 ELSE 0 END)`).join(' + ')}
+    + (CASE WHEN r.is_featured = 1 THEN 5 ELSE 0 END)
+  )`
+  const orderParams = [phrase, ...tokens.map((t) => `%${t}%`)]
+
   return query(
-    `SELECT r.*, c.name as category_name, c.slug as category_slug 
-     FROM reviews r 
-     LEFT JOIN categories c ON r.category_id = c.id 
-     WHERE (r.title LIKE ? OR r.subtitle LIKE ?) AND r.status = 'published'
-     ORDER BY r.published_at DESC 
+    `SELECT r.*, c.name as category_name, c.slug as category_slug
+     FROM reviews r
+     LEFT JOIN categories c ON r.category_id = c.id
+     WHERE (${where}) AND r.status = 'published'
+     ORDER BY ${order} DESC, r.published_at DESC
      LIMIT ?`,
-    [`%${q}%`, `%${q}%`, limit]
+    [...whereParams, ...orderParams, limit]
+  )
+}
+
+// Categories whose name/description match the query — shown as quick links on
+// the search page so a query like "kitchen" jumps straight to the category.
+export async function searchCategories(q: string, limit = 6) {
+  const tokens = tokenize(q)
+  if (tokens.length === 0) return []
+
+  const where = tokens
+    .map(() => `(lower(c.name) LIKE ? OR lower(c.description) LIKE ?)`)
+    .join(' AND ')
+  const whereParams = tokens.flatMap((t) => [`%${t}%`, `%${t}%`])
+
+  return query(
+    `SELECT c.*, COUNT(p.id) as product_count
+     FROM categories c
+     LEFT JOIN products p ON p.category_id = c.id AND p.status = 'published'
+     WHERE ${where}
+     GROUP BY c.id
+     ORDER BY product_count DESC, c.name ASC
+     LIMIT ?`,
+    [...whereParams, limit]
   )
 }
 

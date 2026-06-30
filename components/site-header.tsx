@@ -4,6 +4,7 @@ import Link from "next/link"
 import { useState } from "react"
 import { SearchBar } from "@/components/search-bar"
 import { SavedBadge } from "@/components/saved/saved-badge"
+import { FEATURES } from "@/lib/flags"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -41,7 +42,9 @@ export function SiteHeader() {
             <nav className="grid gap-2 px-2">
               <Link href="/reviews" className="flex items-center gap-2 rounded-[3px] px-3 py-2 text-body hover:bg-accent hover:text-ink">Reviews</Link>
               <Link href="/categories" className="flex items-center gap-2 rounded-[3px] px-3 py-2 text-body hover:bg-accent hover:text-ink">Categories</Link>
-              <Link href="/saved" className="flex items-center gap-2 rounded-[3px] px-3 py-2 text-body hover:bg-accent hover:text-ink">Saved</Link>
+              {FEATURES.saved && (
+                <Link href="/saved" className="flex items-center gap-2 rounded-[3px] px-3 py-2 text-body hover:bg-accent hover:text-ink">Saved</Link>
+              )}
               <Link href="/about" className="flex items-center gap-2 rounded-[3px] px-3 py-2 text-body hover:bg-accent hover:text-ink">About</Link>
               <Link href="/disclosure" className="flex items-center gap-2 rounded-[3px] px-3 py-2 text-body hover:bg-accent hover:text-ink">Affiliate Disclosure</Link>
             </nav>
@@ -90,10 +93,12 @@ export function SiteHeader() {
           <Button variant="ghost" size="icon" className="md:hidden text-body hover:text-brand" onClick={() => setShowSearch(!showSearch)}>
             <Search className="h-5 w-5" />
           </Button>
-          <SavedBadge />
-          <Button asChild variant="ink" size="sm" className="hidden sm:inline-flex">
-            <Link href="/#newsletter">Subscribe</Link>
-          </Button>
+          {FEATURES.saved && <SavedBadge />}
+          {FEATURES.newsletter && (
+            <Button asChild variant="ink" size="sm" className="hidden sm:inline-flex">
+              <Link href="/#newsletter">Subscribe</Link>
+            </Button>
+          )}
         </div>
       </div>
       {showSearch && (
