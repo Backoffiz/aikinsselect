@@ -219,10 +219,12 @@ async function main() {
   }
 
   const linkedIds = new Set((await d1(`SELECT DISTINCT product_id FROM review_products`)).map((r) => r.product_id))
-  const products = await d1(`SELECT id, name, slug, rating, price, asin, availability FROM products WHERE status = 'published'`)
+  const products = await d1(`SELECT id, name, slug, rating, price, asin, availability, affiliate_url, amazon_url FROM products WHERE status = 'published'`)
   const ratingCounts = {}
   let missingPriceOnPick = 0
   let missingAvailOnAsin = 0
+  let noBuyLink = 0
+  let outOfStockPublished = 0
   for (const p of products) {
     if (slugLooksLikeProse(p.slug)) {
       add('WARN', 'junk-slug', `"${p.name}" has a prose-fragment slug: ${p.slug}`)
@@ -244,6 +246,17 @@ async function main() {
     }
     if (linkedIds.has(p.id) && p.price == null) missingPriceOnPick++
     if (p.asin && (p.availability == null || p.availability === 'unknown')) missingAvailOnAsin++
+    // buy link: every published product must be buyable. The site hides the CTA when
+    // affiliate_url is null and trusts these URLs verbatim, so a missing or malformed link
+    // is a dead-end card. (Our pipeline always sets at least a tagged Amazon search URL.)
+    const buy = p.affiliate_url || p.amazon_url
+    if (!buy) {
+      noBuyLink++
+    } else if (!/^https?:\/\/(www\.)?amazon\./i.test(String(buy))) {
+      add('WARN', 'bad-buy-link', `"${p.name}" has a non-Amazon/malformed buy URL: ${String(buy).slice(0, 80)}`)
+    }
+    // out of stock but still published → renders a live-looking buy button; should be archived
+    if (p.availability === 'out_of_stock' || p.availability === 'unavailable') outOfStockPublished++
   }
   // placeholder rating: many products sharing one exact value is a fabricated default, not a score
   for (const [val, count] of Object.entries(ratingCounts)) {
@@ -256,6 +269,12 @@ async function main() {
   }
   if (missingAvailOnAsin > 0) {
     add('WARN', 'stale-availability', `${missingAvailOnAsin} product(s) with an ASIN have no availability — run the PA-API sync worker`)
+  }
+  if (noBuyLink > 0) {
+    add('ERROR', 'no-buy-link', `${noBuyLink} published product(s) have no buy URL (affiliate_url/amazon_url) — they render a dead-end card`)
+  }
+  if (outOfStockPublished > 0) {
+    add('WARN', 'out-of-stock-published', `${outOfStockPublished} product(s) are out_of_stock/unavailable but still published — archive them or let the PA-API sync prune them`)
   }
 
   // --- report ---

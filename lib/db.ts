@@ -222,11 +222,11 @@ export async function getReviewForProduct(productId: string) {
 
 export async function getProductsForReview(reviewSlug: string) {
   return query(
-    `SELECT p.*, rp.rank, rp.mini_review 
-     FROM products p 
-     JOIN review_products rp ON p.id = rp.product_id 
-     JOIN reviews r ON rp.review_id = r.id 
-     WHERE r.slug = ? 
+    `SELECT p.*, rp.rank, rp.mini_review
+     FROM products p
+     JOIN review_products rp ON p.id = rp.product_id
+     JOIN reviews r ON rp.review_id = r.id
+     WHERE r.slug = ? AND p.status = 'published'
      ORDER BY rp.rank`,
     [reviewSlug]
   )
