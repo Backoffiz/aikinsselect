@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Star } from 'lucide-react'
 import { SaveHeartButton } from '@/components/saved/save-heart-button'
+import { AffiliateLink } from '@/components/affiliate-link'
 import { FEATURES } from '@/lib/flags'
 import { cn } from '@/lib/utils'
 import type { SavedItem } from '@/lib/saved/types'
@@ -14,11 +15,14 @@ interface StickyBuyBarProps {
   price: string
   affiliateUrl?: string
   item: SavedItem
+  /** T5 click tracking: product id + the review this bar sits in (if any). */
+  productId?: string
+  guideId?: string
   /** Extra classes on the fixed root — e.g. "lg:hidden" to scope it to mobile. */
   className?: string
 }
 
-export function StickyBuyBar({ name, image, rating, price, affiliateUrl, item, className }: StickyBuyBarProps) {
+export function StickyBuyBar({ name, image, rating, price, affiliateUrl, item, productId, guideId, className }: StickyBuyBarProps) {
   const [show, setShow] = useState(false)
 
   useEffect(() => {
@@ -63,14 +67,15 @@ export function StickyBuyBar({ name, image, rating, price, affiliateUrl, item, c
             />
           )}
           {affiliateUrl && (
-            <a
+            <AffiliateLink
               href={affiliateUrl}
-              target="_blank"
-              rel="noopener sponsored"
+              productId={productId ?? (typeof item?.id === 'string' ? item.id : undefined)}
+              guideId={guideId}
+              location="sticky_mobile_cta"
               className="whitespace-nowrap rounded-lg bg-brand px-5 py-2.5 text-sm font-bold text-white shadow-brand-cta transition-colors hover:bg-brand-hover"
             >
               Check price →
-            </a>
+            </AffiliateLink>
           )}
         </div>
       </div>

@@ -67,10 +67,10 @@ async function queryViaHttp<T = any>(sql: string, params: any[] = []): Promise<T
 // --- Categories ---
 export async function getCategories() {
   return query(`
-    SELECT c.*, COUNT(p.id) as product_count 
-    FROM categories c 
-    LEFT JOIN products p ON c.id = p.category_id 
-    GROUP BY c.id 
+    SELECT c.*, COUNT(p.id) as product_count
+    FROM categories c
+    LEFT JOIN products p ON c.id = p.category_id AND p.status = 'published'
+    GROUP BY c.id
     ORDER BY product_count DESC
   `)
 }
@@ -362,10 +362,30 @@ export async function searchCategories(q: string, limit = 6) {
   )
 }
 
+// --- Affiliate click tracking (T5) ---
+export type AffiliateClick = {
+  product_id: string | null
+  guide_id: string | null
+  merchant: string
+  button_location: string
+  page_url: string | null
+  device_type: string | null
+  country: string | null
+}
+
+/** Append one affiliate click to the funnel log. ts/created_date default in-DB. */
+export async function recordAffiliateClick(c: AffiliateClick): Promise<void> {
+  await query(
+    `INSERT INTO affiliate_clicks (product_id, guide_id, merchant, button_location, page_url, device_type, country)
+     VALUES (?, ?, ?, ?, ?, ?, ?)`,
+    [c.product_id, c.guide_id, c.merchant, c.button_location, c.page_url, c.device_type, c.country],
+  )
+}
+
 // --- Stats ---
 export async function getStats() {
   const reviews = await query('SELECT COUNT(*) as count FROM reviews WHERE status = ?', ['published'])
-  const products = await query('SELECT COUNT(*) as count FROM products')
+  const products = await query('SELECT COUNT(*) as count FROM products WHERE status = ?', ['published'])
   const categories = await query('SELECT COUNT(*) as count FROM categories')
   return {
     reviews: reviews[0]?.count || 0,
