@@ -115,7 +115,7 @@ export default async function HomePage() {
         {/* Hero */}
         <section className="hero-glow relative overflow-hidden">
           <div className="container px-4 pb-14 pt-10 md:px-6 md:pb-24 md:pt-16">
-            <div className="grid gap-10 lg:grid-cols-[1fr_440px] lg:items-center lg:gap-14">
+            <div className="grid gap-10 lg:grid-cols-[1fr_440px] lg:items-start lg:gap-14">
               {/* Copy */}
               <div className="flex flex-col">
                 <p className="animate-fade-up mb-5 flex items-center gap-3" style={{ animationDelay: "0ms" }}>
