@@ -12,9 +12,12 @@ export default function AboutPage() {
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-12 md:py-16 max-w-3xl mx-auto">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-brand">About</p>
-        <h1 className="mt-2 mb-8 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">About Aikins Select</h1>
+      <main className="container mx-auto max-w-3xl flex-1 px-4 py-14 md:py-20">
+        <p className="mb-3 inline-flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-brand">
+          <span className="h-px w-6 bg-brand/50" />
+          About
+        </p>
+        <h1 className="mb-8 font-serif text-4xl font-medium tracking-tight text-ink md:text-5xl">About Aikins Select</h1>
 
         <div className="space-y-6">
           <p className="text-lg leading-relaxed text-body">
@@ -52,7 +55,7 @@ export default function AboutPage() {
           <h2 className="mt-10 font-serif text-2xl md:text-3xl font-medium tracking-tight text-ink">Contact Us</h2>
           <p className="leading-relaxed text-body">
             Have questions, feedback, or product suggestions? We&apos;d love to hear from you.
-            Reach us at <a href="mailto:hello@aikinsselect.com" className="text-brand hover:underline">hello@aikinsselect.com</a>.
+            Reach us at <a href="mailto:hello@aikinsselect.com" className="font-semibold text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand">hello@aikinsselect.com</a>.
           </p>
         </div>
       </main>

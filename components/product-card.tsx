@@ -55,11 +55,11 @@ export function ProductCard({
     : null
 
   return (
-    <div className="group relative flex flex-col overflow-hidden rounded-[5px] border border-card-edge bg-white transition-all hover:shadow-card-hover">
-      <div className={`relative flex h-48 items-center justify-center p-4 ${hasImage ? "bg-white" : "bg-paper-deep"}`}>
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-card-edge bg-white shadow-card transition-all duration-300 hover:-translate-y-1 hover:border-brand/20 hover:shadow-card-hover">
+      <div className={`relative flex h-48 items-center justify-center overflow-hidden p-5 ${hasImage ? "bg-gradient-to-b from-white to-paper-deep/40" : "bg-paper-deep"}`}>
         {bestPick && (
           <div className="absolute left-3 top-3 z-20">
-            <Badge variant="award" className="gap-1 rounded-[2px] text-[10px] font-extrabold uppercase tracking-wide">
+            <Badge variant="award" className="gap-1 rounded-md text-[10px] font-extrabold uppercase tracking-wide shadow-xs">
               <Award className="h-3 w-3" />
               Best Pick
             </Badge>
@@ -67,12 +67,12 @@ export function ProductCard({
         )}
         {hasDeal && (
           <div className="absolute left-3 bottom-3 z-20">
-            <Badge variant="deal" className="rounded-pill text-[10px] font-extrabold">-{savePct}%</Badge>
+            <Badge variant="deal" className="rounded-pill text-[10px] font-extrabold shadow-xs">-{savePct}%</Badge>
           </div>
         )}
         {FEATURES.saved && savedItem && <SaveHeartButton item={savedItem} />}
         {hasImage ? (
-          <img src={image} alt={title} className="max-h-full max-w-full object-contain" loading="lazy" />
+          <img src={image} alt={title} className="max-h-full max-w-full object-contain transition-transform duration-500 group-hover:scale-[1.05]" loading="lazy" />
         ) : (
           <span className="px-2 text-center font-serif text-xl text-muted-ink">{title}</span>
         )}
@@ -102,17 +102,21 @@ export function ProductCard({
             {reviewCount ? ` (${reviewCount})` : ""}
           </span>
         </div>
-        <div className="mt-auto flex items-end justify-between pt-4">
-          <div className="flex items-baseline gap-2">
-            <p className="font-serif text-xl font-semibold tabular-nums text-ink">{price}</p>
-            {hasDeal && <span className="text-xs text-faint line-through">{originalPrice}</span>}
-          </div>
+        <div className="mt-auto flex items-end justify-between gap-3 pt-4">
+          {priceNum !== null ? (
+            <div className="flex items-baseline gap-2">
+              <p className="font-serif text-xl font-semibold tabular-nums text-ink">{price}</p>
+              {hasDeal && <span className="text-xs text-faint line-through">{originalPrice}</span>}
+            </div>
+          ) : (
+            <span className="text-sm font-medium text-faint">See latest price</span>
+          )}
           {affiliateUrl && (
             <a
               href={affiliateUrl}
               target="_blank"
               rel="noopener sponsored"
-              className="relative z-20 rounded-[2px] bg-brand px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-brand-hover"
+              className="relative z-20 rounded-lg bg-brand px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-brand-hover hover:shadow-brand-cta"
             >
               Check price
             </a>

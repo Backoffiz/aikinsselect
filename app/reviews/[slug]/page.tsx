@@ -4,6 +4,8 @@ import Link from "next/link"
 import { SiteHeader } from "@/components/site-header"
 import { SiteFooter } from "@/components/site-footer"
 import { Newsletter } from "@/components/newsletter"
+import { Reveal } from "@/components/ui/reveal"
+import { StickyBuyBar } from "@/components/product/sticky-buy-bar"
 import { ArrowLeft, ArrowRight, Shield, Activity, ChevronRight, ThumbsUp, AlertTriangle, Zap, Target } from "lucide-react"
 import { getReviewBySlug, getProductsForReview, getPublishedReviews } from "@/lib/db"
 import { FEATURES } from "@/lib/flags"
@@ -154,6 +156,13 @@ export default async function ReviewPage({ params }: Props) {
   const topThree = products.slice(0, 3)
   const awardLabels = buildAwardLabels(products)
 
+  // Mobile sticky CTA for the #1 pick — desktop keeps the sticky sidebar instead.
+  const topPick = products[0]
+  const topPickPrice = topPick?.price ? `$${Number(topPick.price).toFixed(2)}` : 'Check price'
+  const topPickItem = topPick
+    ? { id: topPick.id, name: topPick.name, price: topPickPrice, sub: review.category_name, slug: topPick.slug, image: topPick.image_url }
+    : null
+
   const canonicalPath = `/reviews/${slug}`
   const breadcrumbItems = [
     { name: 'Home', url: '/' },
@@ -226,10 +235,10 @@ export default async function ReviewPage({ params }: Props) {
               </div>
 
               {topThree.length > 0 && (
-                <div className="flex items-center justify-center gap-6 lg:gap-8">
+                <div className="hidden items-center justify-center gap-6 lg:flex lg:gap-8">
                   {topThree.map((p: any, i: number) => (
                     <div key={p.id} className={`flex flex-col items-center ${i === 0 ? 'z-10 scale-110' : 'opacity-90'}`}>
-                      <div className={`relative flex items-center justify-center rounded-lg border border-card-edge bg-white p-5 shadow-card-hover ${i === 0 ? 'h-44 w-44' : 'h-32 w-32'}`}>
+                      <div className={`relative flex items-center justify-center rounded-xl border border-card-edge bg-white p-5 shadow-card-hover ${i === 0 ? 'h-44 w-44' : 'h-32 w-32'}`}>
                         {p.image_url && (
                           <img src={p.image_url} alt={p.name} className="max-h-full max-w-full object-contain drop-shadow-md" />
                         )}
@@ -255,13 +264,13 @@ export default async function ReviewPage({ params }: Props) {
               <h2 className="mb-8 text-[13px] font-bold uppercase tracking-[0.15em] text-faint">
                 Our Top Picks at a Glance
               </h2>
-              <div className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+              <Reveal stagger className="grid grid-cols-1 gap-5 sm:grid-cols-3">
                 {topThree.map((product: any, i: number) => {
                   const pros = parseProsConsJSON(product.pros)
                   return (
                     <div
                       key={product.id}
-                      className={`group relative overflow-hidden rounded-lg transition-all hover:shadow-card-hover ${i === 0 ? 'border-2 border-brand/20 bg-white' : 'border border-card-edge bg-white'}`}
+                      className={`group relative overflow-hidden rounded-xl shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover ${i === 0 ? 'border-2 border-brand/20 bg-white' : 'border border-card-edge bg-white'}`}
                     >
                       <div className="px-6 pt-5">
                         <span className={`inline-block rounded-pill px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider ${i === 0 ? 'bg-brand text-white' : i === 1 ? 'bg-ink text-white' : 'border border-card-edge bg-panel text-brand'}`}>
@@ -309,7 +318,7 @@ export default async function ReviewPage({ params }: Props) {
                             href={product.affiliate_url}
                             target="_blank"
                             rel="noopener sponsored"
-                            className={`mt-4 flex items-center justify-center gap-2 rounded-[3px] py-3 text-[14px] font-bold transition-all ${i === 0 ? 'bg-brand text-white hover:bg-brand-hover' : 'bg-panel text-ink hover:bg-paper-deep'}`}
+                            className={`mt-4 flex items-center justify-center gap-2 rounded-lg py-3 text-[14px] font-bold transition-all ${i === 0 ? 'bg-brand text-white shadow-xs hover:bg-brand-hover hover:shadow-brand-cta' : 'bg-panel text-ink hover:bg-paper-deep'}`}
                           >
                             Check Price on Amazon
                             <ArrowRight className="h-4 w-4" />
@@ -319,7 +328,7 @@ export default async function ReviewPage({ params }: Props) {
                     </div>
                   )
                 })}
-              </div>
+              </Reveal>
             </div>
           </section>
         )}
@@ -329,7 +338,7 @@ export default async function ReviewPage({ params }: Props) {
           <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1fr_300px] lg:gap-20">
 
             <div className="min-w-0">
-              <div className="mb-12 flex items-start gap-3 rounded-lg border border-card-edge bg-white px-5 py-4 text-[13px] text-faint">
+              <div className="mb-12 flex items-start gap-3 rounded-xl border border-card-edge bg-white px-5 py-4 text-[13px] text-faint shadow-card">
                 <Shield className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                 <span>
                   <strong className="text-muted-ink">Editorial integrity:</strong> We research independently. Links may earn a commission at no cost to you.{' '}
@@ -345,7 +354,7 @@ export default async function ReviewPage({ params }: Props) {
 
                 return (
                   <div key={product.id} className="mb-14">
-                    <div className={`overflow-hidden rounded-lg border bg-white ${i === 0 ? 'border-brand/20' : 'border-card-edge'}`}>
+                    <div className={`overflow-hidden rounded-xl border bg-white shadow-card ${i === 0 ? 'border-brand/20' : 'border-card-edge'}`}>
                       <div className={`flex items-center justify-between px-6 py-3 ${i === 0 ? 'bg-brand' : 'border-b border-hairline bg-paper'}`}>
                         <span className={`text-[12px] font-bold uppercase tracking-[0.12em] ${i === 0 ? 'text-white' : 'text-faint'}`}>
                           {label}
@@ -388,7 +397,7 @@ export default async function ReviewPage({ params }: Props) {
                                 href={product.affiliate_url}
                                 target="_blank"
                                 rel="noopener sponsored"
-                                className="inline-flex items-center gap-2 rounded-[3px] bg-brand px-6 py-3 text-[14px] font-bold text-white transition-all hover:bg-brand-hover"
+                                className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3 text-[14px] font-bold text-white shadow-xs transition-all hover:bg-brand-hover hover:shadow-brand-cta"
                               >
                                 Check Price
                                 <ArrowRight className="h-4 w-4" />
@@ -467,7 +476,7 @@ export default async function ReviewPage({ params }: Props) {
 
             {/* RIGHT SIDEBAR */}
             <aside className="hidden space-y-5 lg:sticky lg:top-8 lg:block lg:self-start">
-              <div className="overflow-hidden rounded-lg border border-card-edge bg-white">
+              <div className="overflow-hidden rounded-xl border border-card-edge bg-white shadow-card">
                 <div className="border-b border-hairline px-5 py-4">
                   <h3 className="text-[12px] font-bold uppercase tracking-[0.12em] text-faint">Quick Picks</h3>
                 </div>
@@ -497,7 +506,7 @@ export default async function ReviewPage({ params }: Props) {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-card-edge bg-white p-5">
+              <div className="rounded-xl border border-card-edge bg-white p-5 shadow-card">
                 <h3 className="mb-4 text-[12px] font-bold uppercase tracking-[0.12em] text-faint">
                   Why Trust Us
                 </h3>
@@ -520,7 +529,7 @@ export default async function ReviewPage({ params }: Props) {
                 </div>
               </div>
 
-              <div className="rounded-lg border border-card-edge bg-white p-5">
+              <div className="rounded-xl border border-card-edge bg-white p-5 shadow-card">
                 <h3 className="mb-3 text-[12px] font-bold uppercase tracking-[0.12em] text-faint">
                   Best For
                 </h3>
@@ -555,12 +564,12 @@ export default async function ReviewPage({ params }: Props) {
                   View all <ArrowRight className="h-3.5 w-3.5" />
                 </Link>
               </div>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <Reveal stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {related.map((r: any) => (
                   <Link
                     key={r.id}
                     href={`/reviews/${r.slug}`}
-                    className="group block rounded-lg border border-card-edge bg-white p-7 transition-all hover:shadow-card-hover"
+                    className="group block rounded-xl border border-card-edge bg-white p-7 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover"
                   >
                     <span className="mb-3 inline-block text-[11px] font-bold uppercase tracking-[0.12em] text-brand">
                       {r.category_name}
@@ -576,13 +585,24 @@ export default async function ReviewPage({ params }: Props) {
                     </span>
                   </Link>
                 ))}
-              </div>
+              </Reveal>
             </div>
           </section>
         )}
 
         {FEATURES.newsletter && <Newsletter />}
       </main>
+      {topPick?.affiliate_url && topPickItem && (
+        <StickyBuyBar
+          name={topPick.name}
+          image={topPick.image_url}
+          rating={topPick.rating || undefined}
+          price={topPickPrice}
+          affiliateUrl={topPick.affiliate_url}
+          item={topPickItem}
+          className="lg:hidden"
+        />
+      )}
       <SiteFooter />
     </div>
   )

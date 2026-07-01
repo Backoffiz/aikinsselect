@@ -61,6 +61,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable}`}>
       <body className="font-sans antialiased bg-paper text-body">
+        {/* Scroll-reveal animations hide content until JS toggles them in.
+            Without JS, ensure everything is visible (no-JS users + crawlers). */}
+        <noscript>
+          <style>{`.reveal,.reveal-stagger>*{opacity:1!important;transform:none!important}`}</style>
+        </noscript>
         <SavedProvider>{children}</SavedProvider>
         <Toaster />
       </body>

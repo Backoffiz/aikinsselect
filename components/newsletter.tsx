@@ -4,8 +4,9 @@ import { Mail } from "lucide-react"
 
 export function Newsletter() {
   return (
-    <section id="newsletter" className="scroll-mt-20 bg-ink-deep py-12 md:py-16">
-      <div className="container px-4 md:px-6">
+    <section id="newsletter" className="relative scroll-mt-20 overflow-hidden bg-ink-deep py-14 md:py-20">
+      <div aria-hidden className="pointer-events-none absolute -top-24 left-1/2 h-64 w-[36rem] -translate-x-1/2 rounded-full bg-brand/20 blur-3xl" />
+      <div className="container relative px-4 md:px-6">
         <div className="flex flex-col items-center justify-center space-y-4 text-center">
           <div className="space-y-2">
             <h2 className="font-serif text-3xl font-medium tracking-tight text-paper md:text-4xl">
