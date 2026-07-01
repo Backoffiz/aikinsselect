@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Newsreader, Public_Sans } from 'next/font/google'
 import './globals.css'
 import { SavedProvider } from '@/components/providers/saved-provider'
@@ -68,6 +69,17 @@ export default function RootLayout({
         </noscript>
         <SavedProvider>{children}</SavedProvider>
         <Toaster />
+        {/* Cloudflare Web Analytics (privacy-first, cookieless). Inert until the public
+            beacon token is set as NEXT_PUBLIC_CF_BEACON_TOKEN in the Pages build env, so we
+            never ship a placeholder. Get the token from the CF dashboard → Web Analytics. */}
+        {process.env.NEXT_PUBLIC_CF_BEACON_TOKEN && (
+          <Script
+            id="cf-web-analytics"
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            strategy="afterInteractive"
+            data-cf-beacon={JSON.stringify({ token: process.env.NEXT_PUBLIC_CF_BEACON_TOKEN })}
+          />
+        )}
       </body>
     </html>
   )
