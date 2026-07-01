@@ -3,9 +3,10 @@ import Link from "next/link"
 import { Card } from "@/components/ui/card"
 import { ArrowRight, Sparkles } from "lucide-react"
 import { getFeaturedReview } from "@/lib/db"
+import { HERO_REVIEW_CANDIDATES } from "@/lib/curation"
 
 export async function FeaturedReview() {
-  const review = await getFeaturedReview()
+  const review = await getFeaturedReview(HERO_REVIEW_CANDIDATES)
   if (!review) return null
 
   const image = review.category_slug

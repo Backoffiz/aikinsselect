@@ -108,13 +108,31 @@ export async function getPublishedReviews(limit = 20) {
   )
 }
 
-export async function getFeaturedReview() {
-  const results = await query(
-    `SELECT r.*, c.name as category_name, c.slug as category_slug,
+// is_featured is 1 on every review (meaningless), so the hero is curated by an ordered
+// slug list passed from lib/curation.ts. First published match wins; if none match we
+// fall back to the newest published review.
+export async function getFeaturedReview(preferred: string[] = []) {
+  const SELECT = `SELECT r.*, c.name as category_name, c.slug as category_slug,
             ${REVIEW_CARD_IMAGE} as card_image,
             (SELECT COUNT(*) FROM review_products rp WHERE rp.review_id = r.id) as product_count
      FROM reviews r
-     LEFT JOIN categories c ON r.category_id = c.id
+     LEFT JOIN categories c ON r.category_id = c.id`
+
+  if (preferred.length) {
+    const placeholders = preferred.map(() => '?').join(',')
+    const orderCase = preferred.map((_, i) => `WHEN ? THEN ${i}`).join(' ')
+    const picked = await query(
+      `${SELECT}
+       WHERE r.status = 'published' AND r.slug IN (${placeholders})
+       ORDER BY CASE r.slug ${orderCase} ELSE 999 END
+       LIMIT 1`,
+      [...preferred, ...preferred]
+    )
+    if (picked[0]) return picked[0]
+  }
+
+  const results = await query(
+    `${SELECT}
      WHERE r.status = 'published'
      ORDER BY r.is_featured DESC, r.published_at DESC
      LIMIT 1`
@@ -146,13 +164,23 @@ export async function getReviewsByCategory(categorySlug: string, limit = 20) {
 }
 
 // --- Products ---
+// Curated + diverse, NOT random: the single strongest product per category
+// (best-pick, then rating), then the best of those. Deterministic so the strip
+// reads as an editorial selection, and image-gated so no blank cards render.
 export async function getTrendingProducts(limit = 4) {
   return query(
-    `SELECT p.*, c.name as category_name, c.slug as category_slug 
-     FROM products p
-     LEFT JOIN categories c ON p.category_id = c.id
-     WHERE p.is_trending = 1 AND p.status = 'published'
-     ORDER BY RANDOM()
+    `SELECT * FROM (
+       SELECT p.*, c.name as category_name, c.slug as category_slug,
+              ROW_NUMBER() OVER (
+                PARTITION BY p.category_id
+                ORDER BY p.is_best_pick DESC, p.rating DESC, p.id
+              ) as rn
+       FROM products p
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE p.is_trending = 1 AND p.status = 'published'
+         AND p.image_url IS NOT NULL AND p.image_url != ''
+     ) WHERE rn = 1
+     ORDER BY is_best_pick DESC, rating DESC
      LIMIT ?`,
     [limit]
   )
