@@ -6,13 +6,14 @@ import { SiteFooter } from "@/components/site-footer"
 import { Newsletter } from "@/components/newsletter"
 import { Reveal } from "@/components/ui/reveal"
 import { StickyBuyBar } from "@/components/product/sticky-buy-bar"
+import { ShareButtons } from "@/components/share-buttons"
 import { ArrowLeft, ArrowRight, Shield, Activity, ChevronRight, ThumbsUp, AlertTriangle, Zap, Target } from "lucide-react"
 import { getReviewBySlug, getProductsForReview, getPublishedReviews } from "@/lib/db"
 import { FEATURES } from "@/lib/flags"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo/json-ld"
-import { jsonLdGraph, organizationNode, breadcrumbNode, itemListNode } from "@/lib/seo"
+import { jsonLdGraph, organizationNode, breadcrumbNode, itemListNode, SITE_URL } from "@/lib/seo"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -232,6 +233,7 @@ export default async function ReviewPage({ params }: Props) {
                     </span>
                   )}
                 </div>
+                <ShareButtons url={`${SITE_URL}${canonicalPath}`} title={review.title} />
               </div>
 
               {topThree.length > 0 && (
