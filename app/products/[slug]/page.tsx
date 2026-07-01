@@ -8,6 +8,7 @@ import { SiteFooter } from '@/components/site-footer'
 import { ProductCard } from '@/components/product-card'
 import { SaveHeartButton } from '@/components/saved/save-heart-button'
 import { StickyBuyBar } from '@/components/product/sticky-buy-bar'
+import { AffiliateLink } from '@/components/affiliate-link'
 import { Star, ChevronRight, ArrowRight, Award } from 'lucide-react'
 import { Reveal } from '@/components/ui/reveal'
 import {
@@ -263,14 +264,14 @@ export default async function ProductPage({ params }: Props) {
                 </div>
                 <div className="px-6 py-5">
                   {buyUrl ? (
-                    <a
+                    <AffiliateLink
                       href={buyUrl}
-                      target="_blank"
-                      rel="noopener sponsored"
+                      productId={product.id}
+                      location="product_page_primary"
                       className="mb-2.5 block rounded-lg bg-brand py-4 text-center text-base font-bold text-white shadow-brand-cta transition-colors hover:bg-brand-hover"
                     >
                       Check price at Amazon →
-                    </a>
+                    </AffiliateLink>
                   ) : null}
                   {FEATURES.saved && (
                     <SaveHeartButton item={savedItem} variant="inline" className="w-full" />
@@ -284,16 +285,17 @@ export default async function ProductPage({ params }: Props) {
                   <div className="px-6 pb-5 pt-1">
                     <div className="mb-2 text-[12px] font-bold uppercase tracking-[0.06em] text-faint">Where to buy</div>
                     {retailers.map((r) => (
-                      <a
+                      <AffiliateLink
                         key={r.name}
                         href={r.url as string}
-                        target="_blank"
-                        rel="noopener sponsored"
+                        productId={product.id}
+                        merchant={r.name}
+                        location="product_page_merchant"
                         className="flex items-center justify-between border-b border-hairline py-3 last:border-0"
                       >
                         <span className="text-sm font-bold text-ink">{r.name}</span>
                         <span className="text-xs font-bold text-brand">Check price →</span>
-                      </a>
+                      </AffiliateLink>
                     ))}
                   </div>
                 )}
@@ -351,6 +353,7 @@ export default async function ProductPage({ params }: Props) {
         price={priceStr}
         affiliateUrl={buyUrl}
         item={savedItem}
+        productId={product.id}
       />
       <SiteFooter />
     </div>

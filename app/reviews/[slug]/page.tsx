@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer"
 import { Newsletter } from "@/components/newsletter"
 import { Reveal } from "@/components/ui/reveal"
 import { StickyBuyBar } from "@/components/product/sticky-buy-bar"
+import { AffiliateLink } from "@/components/affiliate-link"
 import { ShareButtons } from "@/components/share-buttons"
 import { ArrowLeft, ArrowRight, Shield, Activity, ChevronRight, ThumbsUp, AlertTriangle, Zap, Target } from "lucide-react"
 import { getReviewBySlug, getProductsForReview, getPublishedReviews } from "@/lib/db"
@@ -316,15 +317,16 @@ export default async function ReviewPage({ params }: Props) {
                         </div>
 
                         {product.affiliate_url && (
-                          <a
+                          <AffiliateLink
                             href={product.affiliate_url}
-                            target="_blank"
-                            rel="noopener sponsored"
+                            productId={product.id}
+                            guideId={slug}
+                            location="top_comparison_table"
                             className={`mt-4 flex items-center justify-center gap-2 rounded-lg py-3 text-[14px] font-bold transition-all ${i === 0 ? 'bg-brand text-white shadow-xs hover:bg-brand-hover hover:shadow-brand-cta' : 'bg-panel text-ink hover:bg-paper-deep'}`}
                           >
                             Check Price on Amazon
                             <ArrowRight className="h-4 w-4" />
-                          </a>
+                          </AffiliateLink>
                         )}
                       </div>
                     </div>
@@ -395,15 +397,16 @@ export default async function ReviewPage({ params }: Props) {
                               </span>
                             )}
                             {product.affiliate_url && (
-                              <a
+                              <AffiliateLink
                                 href={product.affiliate_url}
-                                target="_blank"
-                                rel="noopener sponsored"
+                                productId={product.id}
+                                guideId={slug}
+                                location="inline_cta"
                                 className="inline-flex items-center gap-2 rounded-lg bg-brand px-6 py-3 text-[14px] font-bold text-white shadow-xs transition-all hover:bg-brand-hover hover:shadow-brand-cta"
                               >
                                 Check Price
                                 <ArrowRight className="h-4 w-4" />
-                              </a>
+                              </AffiliateLink>
                             )}
                           </div>
 
@@ -483,28 +486,39 @@ export default async function ReviewPage({ params }: Props) {
                   <h3 className="text-[12px] font-bold uppercase tracking-[0.12em] text-faint">Quick Picks</h3>
                 </div>
                 <div className="divide-y divide-hairline">
-                  {products.slice(0, 5).map((product: any, i: number) => (
-                    <a
-                      key={product.id}
-                      href={product.affiliate_url || undefined}
-                      target={product.affiliate_url ? '_blank' : undefined}
-                      rel="noopener sponsored"
-                      className="flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-paper"
-                    >
-                      <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${i === 0 ? 'bg-brand text-white' : 'bg-panel text-brand'}`}>
-                        {i + 1}
-                      </span>
-                      {product.image_url && (
-                        <img src={product.image_url} alt="" className="h-9 w-9 shrink-0 object-contain" loading="lazy" />
-                      )}
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-[12.5px] font-semibold leading-tight text-ink">{product.name}</p>
-                        <p className="mt-0.5 text-[11px] text-faint">
-                          {product.price ? `$${Number(product.price).toFixed(0)}` : 'Check price'}
-                        </p>
-                      </div>
-                    </a>
-                  ))}
+                  {products.slice(0, 5).map((product: any, i: number) => {
+                    const rowClass = "flex items-center gap-3 px-5 py-3.5 transition-colors hover:bg-paper"
+                    const inner = (
+                      <>
+                        <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold ${i === 0 ? 'bg-brand text-white' : 'bg-panel text-brand'}`}>
+                          {i + 1}
+                        </span>
+                        {product.image_url && (
+                          <img src={product.image_url} alt="" className="h-9 w-9 shrink-0 object-contain" loading="lazy" />
+                        )}
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-[12.5px] font-semibold leading-tight text-ink">{product.name}</p>
+                          <p className="mt-0.5 text-[11px] text-faint">
+                            {product.price ? `$${Number(product.price).toFixed(0)}` : 'Check price'}
+                          </p>
+                        </div>
+                      </>
+                    )
+                    return product.affiliate_url ? (
+                      <AffiliateLink
+                        key={product.id}
+                        href={product.affiliate_url}
+                        productId={product.id}
+                        guideId={slug}
+                        location="review_sidebar"
+                        className={rowClass}
+                      >
+                        {inner}
+                      </AffiliateLink>
+                    ) : (
+                      <div key={product.id} className={rowClass}>{inner}</div>
+                    )
+                  })}
                 </div>
               </div>
 
@@ -536,20 +550,31 @@ export default async function ReviewPage({ params }: Props) {
                   Best For
                 </h3>
                 <div className="space-y-1">
-                  {products.slice(0, 5).map((p: any, i: number) => (
-                    <a
-                      key={p.id}
-                      href={p.affiliate_url || undefined}
-                      target={p.affiliate_url ? '_blank' : undefined}
-                      rel="noopener sponsored"
-                      className="group flex items-center justify-between rounded-lg px-3 py-2.5 text-[13px] transition-colors hover:bg-panel"
-                    >
-                      <span className="truncate text-muted-ink transition-colors group-hover:text-ink">
-                        {awardLabels[p.id] || `Pick #${i + 1}`}
-                      </span>
-                      <ChevronRight className="h-3.5 w-3.5 shrink-0 text-card-edge transition-colors group-hover:text-brand" />
-                    </a>
-                  ))}
+                  {products.slice(0, 5).map((p: any, i: number) => {
+                    const rowClass = "group flex items-center justify-between rounded-lg px-3 py-2.5 text-[13px] transition-colors hover:bg-panel"
+                    const inner = (
+                      <>
+                        <span className="truncate text-muted-ink transition-colors group-hover:text-ink">
+                          {awardLabels[p.id] || `Pick #${i + 1}`}
+                        </span>
+                        <ChevronRight className="h-3.5 w-3.5 shrink-0 text-card-edge transition-colors group-hover:text-brand" />
+                      </>
+                    )
+                    return p.affiliate_url ? (
+                      <AffiliateLink
+                        key={p.id}
+                        href={p.affiliate_url}
+                        productId={p.id}
+                        guideId={slug}
+                        location="review_sidebar"
+                        className={rowClass}
+                      >
+                        {inner}
+                      </AffiliateLink>
+                    ) : (
+                      <div key={p.id} className={rowClass}>{inner}</div>
+                    )
+                  })}
                 </div>
               </div>
             </aside>
@@ -602,6 +627,8 @@ export default async function ReviewPage({ params }: Props) {
           price={topPickPrice}
           affiliateUrl={topPick.affiliate_url}
           item={topPickItem}
+          productId={topPick.id}
+          guideId={slug}
           className="lg:hidden"
         />
       )}

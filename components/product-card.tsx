@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
 import { SaveHeartButton } from "@/components/saved/save-heart-button"
+import { AffiliateLink } from "@/components/affiliate-link"
 import { FEATURES } from "@/lib/flags"
 import { Award, Star } from "lucide-react"
 
@@ -20,6 +21,9 @@ interface ProductCardProps {
   /** Product id + slug enable the save-heart and the internal detail link. */
   productId?: string
   slug?: string
+  /** T5 click tracking: on-page placement + the review this card sits in (if any). */
+  trackLocation?: string
+  guideId?: string
 }
 
 function toNumber(s?: string): number | null {
@@ -40,6 +44,8 @@ export function ProductCard({
   affiliateUrl,
   productId,
   slug,
+  trackLocation = "product_card",
+  guideId,
 }: ProductCardProps) {
   const hasImage = image && !image.includes("placeholder")
   const detailHref = slug ? `/products/${slug}` : affiliateUrl
@@ -112,14 +118,15 @@ export function ProductCard({
             <span className="text-sm font-medium text-faint">See latest price</span>
           )}
           {affiliateUrl && (
-            <a
+            <AffiliateLink
               href={affiliateUrl}
-              target="_blank"
-              rel="noopener sponsored"
+              productId={productId}
+              guideId={guideId}
+              location={trackLocation}
               className="relative z-20 rounded-lg bg-brand px-4 py-2.5 text-xs font-bold text-white shadow-xs transition-all hover:bg-brand-hover hover:shadow-brand-cta"
             >
               Check price
-            </a>
+            </AffiliateLink>
           )}
         </div>
       </div>
