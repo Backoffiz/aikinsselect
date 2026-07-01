@@ -14,7 +14,7 @@ import { FEATURES } from "@/lib/flags"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo/json-ld"
-import { jsonLdGraph, organizationNode, breadcrumbNode, itemListNode, SITE_URL } from "@/lib/seo"
+import { jsonLdGraph, organizationNode, breadcrumbNode, itemListNode, articleNode, SITE_URL } from "@/lib/seo"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -47,6 +47,14 @@ function parseProsConsJSON(val: any): string[] {
   if (!val) return []
   if (Array.isArray(val)) return val
   try { return JSON.parse(val) } catch { return [] }
+}
+
+// D1 stores datetimes as 'YYYY-MM-DD HH:MM:SS'; normalize before formatting so the
+// "Updated <month year>" freshness signal renders consistently.
+function fmtMonthYear(v: any): string | null {
+  if (!v) return null
+  const d = new Date(String(v).replace(' ', 'T'))
+  return isNaN(d.getTime()) ? null : d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
 }
 
 function renderEditorialContent(content: string): string {
@@ -174,9 +182,26 @@ export default async function ReviewPage({ params }: Props) {
       : []),
     { name: review.title, url: canonicalPath },
   ]
+  // Freshness signal — prefer the last content update over first publish.
+  const updatedLabel = fmtMonthYear(review.updated_at) || fmtMonthYear(review.published_at)
+  const guideImage =
+    review.hero_image ||
+    products[0]?.image_url ||
+    (review.category_slug ? `/categories/${review.category_slug}.jpg` : undefined)
+
   const structuredData = jsonLdGraph([
     organizationNode(),
     breadcrumbNode(breadcrumbItems),
+    // Article node carries organizational authorship + publish/modified dates (E-E-A-T + freshness).
+    articleNode({
+      headline: review.title,
+      description: review.subtitle || review.excerpt,
+      url: canonicalPath,
+      datePublished: review.published_at,
+      dateModified: review.updated_at || review.published_at,
+      image: guideImage,
+      section: review.category_name,
+    }),
     products.length > 0 ? itemListNode(products, { name: review.title, url: canonicalPath }) : null,
   ])
 
@@ -227,10 +252,10 @@ export default async function ReviewPage({ params }: Props) {
                     <span className="h-1.5 w-1.5 rounded-full bg-brand"></span>
                     {products.length} products compared
                   </span>
-                  {review.published_at && (
+                  {updatedLabel && (
                     <span className="flex items-center gap-2">
                       <span className="h-1.5 w-1.5 rounded-full bg-brand"></span>
-                      Updated {new Date(review.published_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      Updated {updatedLabel}
                     </span>
                   )}
                 </div>
@@ -337,6 +362,82 @@ export default async function ReviewPage({ params }: Props) {
           </section>
         )}
 
+        {/* COMPARISON TABLE — scannable side-by-side of every pick (featured-snippet friendly) */}
+        {products.length >= 2 && (
+          <section className="bg-paper pb-4 md:pb-8">
+            <div className="mx-auto max-w-7xl px-5 sm:px-8 lg:px-12">
+              <h2 className="mb-6 text-[13px] font-bold uppercase tracking-[0.15em] text-faint">
+                How the picks compare
+              </h2>
+              <div className="overflow-x-auto rounded-xl border border-card-edge bg-white shadow-card">
+                <table className="w-full min-w-[640px] border-collapse text-left">
+                  <thead>
+                    <tr className="border-b border-hairline bg-white">
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-faint">#</th>
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-faint">Product</th>
+                      <th className="px-5 py-3.5 text-[11px] font-bold uppercase tracking-wider text-faint">Best for</th>
+                      <th className="px-5 py-3.5 text-center text-[11px] font-bold uppercase tracking-wider text-faint">Score</th>
+                      <th className="px-5 py-3.5 text-right text-[11px] font-bold uppercase tracking-wider text-faint">Price</th>
+                      <th className="px-5 py-3.5" aria-label="Buy" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {products.map((product: any, i: number) => {
+                      const label = awardLabels[product.id] || `Pick #${i + 1}`
+                      return (
+                        <tr key={product.id} className="border-b border-hairline transition-colors last:border-0 hover:bg-paper">
+                          <td className="px-5 py-4 align-middle">
+                            <span className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-[11px] font-bold ${i === 0 ? 'bg-brand text-white' : 'bg-panel text-brand'}`}>
+                              {i + 1}
+                            </span>
+                          </td>
+                          <td className="px-5 py-4 align-middle">
+                            <div className="flex items-center gap-3">
+                              {product.image_url && (
+                                <img src={product.image_url} alt="" className="h-10 w-10 shrink-0 object-contain" loading="lazy" />
+                              )}
+                              <span className="text-[14px] font-semibold leading-tight text-ink">{product.name}</span>
+                            </div>
+                          </td>
+                          <td className="whitespace-nowrap px-5 py-4 align-middle text-[13px] font-medium text-muted-ink">
+                            {label}
+                          </td>
+                          <td className="px-5 py-4 text-center align-middle">
+                            {product.rating ? (
+                              <span className="rounded-pill bg-savings-bg px-2.5 py-1 text-[13px] font-bold tabular-nums text-savings">
+                                {product.rating}/5
+                              </span>
+                            ) : (
+                              <span className="text-faint">—</span>
+                            )}
+                          </td>
+                          <td className="whitespace-nowrap px-5 py-4 text-right align-middle text-[14px] font-semibold tabular-nums text-ink">
+                            {product.price ? `$${Number(product.price).toFixed(0)}` : <span className="font-normal text-faint">Check price</span>}
+                          </td>
+                          <td className="px-5 py-4 text-right align-middle">
+                            {product.affiliate_url && (
+                              <AffiliateLink
+                                href={product.affiliate_url}
+                                productId={product.id}
+                                guideId={slug}
+                                location="comparison_table_row"
+                                className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-lg bg-brand px-4 py-2 text-[13px] font-bold text-white transition-all hover:bg-brand-hover hover:shadow-brand-cta"
+                              >
+                                Check price
+                                <ArrowRight className="h-3.5 w-3.5" />
+                              </AffiliateLink>
+                            )}
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* MAIN CONTENT */}
         <div className="mx-auto max-w-7xl px-5 py-14 sm:px-8 md:py-20 lg:px-12">
           <div className="grid grid-cols-1 gap-14 lg:grid-cols-[1fr_300px] lg:gap-20">
@@ -345,8 +446,10 @@ export default async function ReviewPage({ params }: Props) {
               <div className="mb-12 flex items-start gap-3 rounded-xl border border-card-edge bg-white px-5 py-4 text-[13px] text-faint shadow-card">
                 <Shield className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
                 <span>
-                  <strong className="text-muted-ink">Editorial integrity:</strong> We research independently. Links may earn a commission at no cost to you.{' '}
-                  <Link href="/disclosure" className="text-brand underline decoration-brand/30 underline-offset-2 hover:decoration-brand">Learn more</Link>
+                  <strong className="text-muted-ink">Editorial integrity:</strong> We research independently and score every pick the same way. Links may earn a commission at no cost to you.{' '}
+                  <Link href="/how-we-review" className="text-brand underline decoration-brand/30 underline-offset-2 hover:decoration-brand">How we score</Link>
+                  {' · '}
+                  <Link href="/disclosure" className="text-brand underline decoration-brand/30 underline-offset-2 hover:decoration-brand">Disclosure</Link>
                 </span>
               </div>
 
@@ -528,9 +631,9 @@ export default async function ReviewPage({ params }: Props) {
                 </h3>
                 <div className="space-y-4">
                   {[
-                    { icon: Target, stat: `${products.length}+`, label: 'Products evaluated' },
-                    { icon: Activity, stat: '50+', label: 'Hours researched' },
-                    { icon: Shield, stat: '100%', label: 'Independent reviews' },
+                    { icon: Target, stat: `${products.length}`, label: 'Products compared' },
+                    { icon: Activity, stat: '5', label: 'Factors scored' },
+                    { icon: Shield, stat: '100%', label: 'Independent' },
                   ].map(({ icon: Icon, stat, label }) => (
                     <div key={label} className="flex items-center gap-3">
                       <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-panel">
@@ -543,6 +646,9 @@ export default async function ReviewPage({ params }: Props) {
                     </div>
                   ))}
                 </div>
+                <Link href="/how-we-review" className="mt-4 inline-flex items-center gap-1 text-[12px] font-bold text-brand transition-colors hover:text-brand-hover">
+                  How we score <ChevronRight className="h-3 w-3" />
+                </Link>
               </div>
 
               <div className="rounded-xl border border-card-edge bg-white p-5 shadow-card">
