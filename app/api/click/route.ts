@@ -11,6 +11,7 @@ const LOCATIONS = new Set([
   'product_page_primary',
   'product_page_merchant',
   'review_sidebar',
+  'hero_featured_offer',
   'quiz_result',
   'gift_guide_card',
   'category_card',

@@ -4,6 +4,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { SearchBar } from "@/components/search-bar"
 import { FeaturedReview } from "@/components/featured-review"
+import { FeaturedOffer } from "@/components/featured-offer"
 import { CategoryCard } from "@/components/category-card"
 import { ProductCard } from "@/components/product-card"
 import { Newsletter } from "@/components/newsletter"
@@ -133,7 +134,7 @@ export default async function HomePage() {
                   className="animate-fade-up mt-5 max-w-[560px] text-pretty text-[17px] leading-relaxed text-muted-ink md:text-lg"
                   style={{ animationDelay: "160ms" }}
                 >
-                  No fluff, no paid placements. We cross-reference trusted expert reviews and real user
+                  No fluff, just honest picks. We cross-reference trusted expert reviews and real user
                   feedback to find the products that actually deliver.
                 </p>
                 <div
@@ -162,9 +163,10 @@ export default async function HomePage() {
                 />
               </div>
 
-              {/* Featured — now visible on every breakpoint */}
-              <div className="animate-fade-up" style={{ animationDelay: "200ms" }}>
+              {/* Featured — Editor's Choice guide + a featured bounty offer */}
+              <div className="animate-fade-up flex flex-col gap-4" style={{ animationDelay: "200ms" }}>
                 <FeaturedReview />
+                <FeaturedOffer />
               </div>
 
               {/* Trust stats — mobile placement: visual proof after the imagery */}
@@ -191,8 +193,8 @@ export default async function HomePage() {
           <div className="container px-4 md:px-6">
             <SectionHeading
               eyebrow="Trending now"
-              title="This month's top picks"
-              subtitle="The products our readers are loving right now"
+              title="Editor-curated top picks"
+              subtitle="A hand-picked standout from each of our strongest categories"
               href="/reviews"
               linkLabel="View all"
             />
