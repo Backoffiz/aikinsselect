@@ -17,8 +17,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${baseUrl}/disclosure`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.3 },
   ]
 
-  // Published reviews
-  const reviews = await getPublishedReviews(100)
+  // Published reviews (cap high enough to include the whole catalog — a low cap silently
+  // drops review pages from the sitemap, hurting discovery of our primary SEO content).
+  const reviews = await getPublishedReviews(1000)
   const reviewPages: MetadataRoute.Sitemap = reviews.map((review: any) => ({
     url: `${baseUrl}/reviews/${review.slug}`,
     lastModified: new Date(review.updated_at || review.published_at),
