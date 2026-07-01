@@ -88,12 +88,14 @@ const BRANDS = [
 ]
 
 /**
- * Tokens that betray a slug generated from prose rather than a product name. The first slug
- * token is skipped before checking (it's normally the brand, e.g. "the-ordinary-…"), which
- * avoids false positives on brands/products that legitimately contain a stopword.
+ * Tokens that betray a slug generated from PROSE rather than a product name — verbs and
+ * relative pronouns that only appear in a sentence fragment (e.g. "ninja-has-replacement-parts").
+ * Deliberately EXCLUDES connectives like with/and/for/the, which appear in perfectly good product
+ * names ("pots-and-pans-set", "wireless-for-xbox", "breville-the-joule", "mirror-with-speaker").
+ * The first slug token is skipped before checking (normally the brand).
  */
-const SLUG_STOPWORDS = ['has', 'have', 'claims', 'that', 'this', 'with', 'and', 'for', 'your',
-  'its', 'are', 'was', 'were', 'will', 'can', 'says', 'the', 'which', 'their', 'best']
+const SLUG_STOPWORDS = ['has', 'have', 'claims', 'that', 'this',
+  'are', 'was', 'were', 'will', 'says', 'which']
 
 /**
  * Signatures of a broken auto-generated article. The Gen-2 template generator emitted this exact
