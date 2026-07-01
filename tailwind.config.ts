@@ -93,13 +93,21 @@ const config = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        xl: "calc(var(--radius) + 4px)",
+        "2xl": "calc(var(--radius) + 12px)",
         pill: "100px",
       },
       boxShadow: {
-        card: "0 1px 2px 0 rgba(26, 26, 23, 0.04)",
-        "card-hover": "0 18px 40px -28px rgba(26, 26, 23, 0.4)",
+        xs: "0 1px 2px 0 rgba(26, 26, 23, 0.05)",
+        card: "0 1px 2px 0 rgba(26, 26, 23, 0.04), 0 1px 3px 0 rgba(26, 26, 23, 0.03)",
+        "card-hover":
+          "0 2px 4px -1px rgba(26, 26, 23, 0.06), 0 24px 48px -20px rgba(26, 26, 23, 0.32)",
+        "card-lift":
+          "0 2px 4px -1px rgba(26, 26, 23, 0.05), 0 32px 64px -24px rgba(26, 26, 23, 0.4)",
         popover: "0 18px 40px -16px rgba(26, 26, 23, 0.4)",
         modal: "0 30px 80px -24px rgba(21, 20, 15, 0.6)",
+        glow: "0 0 0 1px rgba(31, 111, 74, 0.08), 0 24px 56px -20px rgba(31, 111, 74, 0.3)",
+        "brand-cta": "0 8px 24px -8px rgba(31, 111, 74, 0.45)",
       },
       keyframes: {
         "accordion-down": {
@@ -115,11 +123,30 @@ const config = {
           "70%": { boxShadow: "0 0 0 6px rgba(43, 213, 118, 0)" },
           "100%": { boxShadow: "0 0 0 0 rgba(43, 213, 118, 0)" },
         },
+        "fade-up": {
+          from: { opacity: "0", transform: "translateY(16px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        "fade-in": {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "live-pulse": "live-pulse 2s infinite",
+        "fade-up": "fade-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both",
+        "fade-in": "fade-in 0.6s ease both",
+        float: "float 7s ease-in-out infinite",
+        shimmer: "shimmer 2.2s infinite",
       },
     },
   },

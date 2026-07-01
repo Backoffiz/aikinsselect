@@ -7,6 +7,7 @@ import { SiteHeader } from '@/components/site-header'
 import { SiteFooter } from '@/components/site-footer'
 import { ProductCard } from '@/components/product-card'
 import { ArrowLeft } from 'lucide-react'
+import { Reveal } from '@/components/ui/reveal'
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import { JsonLd } from '@/components/seo/json-ld'
@@ -86,28 +87,28 @@ export default async function CategoryPage({ params }: Props) {
           {/* Reviews for this category */}
           {reviews.length > 0 && (
             <section className="mb-12">
-              <h2 className="mb-5 font-serif text-2xl font-medium text-ink">Reviews in {category.name}</h2>
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              <h2 className="mb-5 font-serif text-2xl font-medium tracking-tight text-ink">Reviews in {category.name}</h2>
+              <Reveal stagger className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {reviews.map((review: any) => (
                   <Link
                     key={review.id}
                     href={`/reviews/${review.slug}`}
-                    className="block rounded-[5px] border border-card-edge bg-white p-5 transition-all hover:shadow-card-hover"
+                    className="group block rounded-xl border border-card-edge bg-white p-5 shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-card-hover"
                   >
                     <div className="mb-2 text-[11px] font-bold uppercase tracking-wider text-brand">Buying guide</div>
-                    <h3 className="font-serif text-lg font-medium text-ink">{review.title}</h3>
+                    <h3 className="font-serif text-lg font-medium text-ink transition-colors group-hover:text-brand">{review.title}</h3>
                     {review.subtitle && <p className="mt-1 line-clamp-2 text-sm text-muted-ink">{review.subtitle}</p>}
                   </Link>
                 ))}
-              </div>
+              </Reveal>
             </section>
           )}
 
           {/* Best Picks */}
           {bestPicks.length > 0 && (
             <section className="mb-12">
-              <h2 className="mb-5 font-serif text-2xl font-medium text-ink">Editor&apos;s picks</h2>
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <h2 className="mb-5 font-serif text-2xl font-medium tracking-tight text-ink">Editor&apos;s picks</h2>
+              <Reveal stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {bestPicks.map((product: any) => (
                   <ProductCard
                     key={product.id}
@@ -122,7 +123,7 @@ export default async function CategoryPage({ params }: Props) {
                     affiliateUrl={product.affiliate_url}
                   />
                 ))}
-              </div>
+              </Reveal>
             </section>
           )}
 
@@ -130,7 +131,7 @@ export default async function CategoryPage({ params }: Props) {
           <section className="mb-12">
             <h2 className="mb-5 font-serif text-2xl font-medium text-ink">All {category.name} products</h2>
             {otherProducts.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <Reveal stagger className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {otherProducts.map((product: any) => (
                   <ProductCard
                     key={product.id}
@@ -144,7 +145,7 @@ export default async function CategoryPage({ params }: Props) {
                     affiliateUrl={product.affiliate_url}
                   />
                 ))}
-              </div>
+              </Reveal>
             ) : (
               <p className="py-8 text-center text-faint">More products coming soon.</p>
             )}

@@ -12,9 +12,12 @@ export default function DisclosurePage() {
   return (
     <div className="flex min-h-screen flex-col bg-paper">
       <SiteHeader />
-      <main className="flex-1 container px-4 py-12 md:py-16 max-w-3xl mx-auto">
-        <p className="text-[11px] font-bold uppercase tracking-wider text-brand">Legal</p>
-        <h1 className="mt-2 mb-2 font-serif text-4xl md:text-5xl font-medium tracking-tight text-ink">Affiliate Disclosure</h1>
+      <main className="container mx-auto max-w-3xl flex-1 px-4 py-14 md:py-20">
+        <p className="mb-3 inline-flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-brand">
+          <span className="h-px w-6 bg-brand/50" />
+          Legal
+        </p>
+        <h1 className="mb-2 font-serif text-4xl font-medium tracking-tight text-ink md:text-5xl">Affiliate Disclosure</h1>
         <p className="mb-8 text-sm text-faint">Last updated: February 24, 2026</p>
 
         <div className="space-y-6 leading-relaxed text-body">
@@ -68,7 +71,7 @@ export default function DisclosurePage() {
           <h2 className="mt-10 font-serif text-2xl font-medium tracking-tight text-ink">Questions?</h2>
           <p>
             If you have questions about our affiliate relationships, please contact us at{" "}
-            <a href="mailto:hello@aikinsselect.com" className="text-brand hover:underline">hello@aikinsselect.com</a>.
+            <a href="mailto:hello@aikinsselect.com" className="font-semibold text-brand underline decoration-brand/40 underline-offset-2 hover:decoration-brand">hello@aikinsselect.com</a>.
           </p>
         </div>
       </main>

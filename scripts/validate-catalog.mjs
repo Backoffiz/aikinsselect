@@ -258,10 +258,14 @@ async function main() {
     // out of stock but still published → renders a live-looking buy button; should be archived
     if (p.availability === 'out_of_stock' || p.availability === 'unavailable') outOfStockPublished++
   }
-  // placeholder rating: many products sharing one exact value is a fabricated default, not a score
+  // placeholder rating: a fabricated default shows up as ONE value dominating the whole catalog
+  // (the old bug was every product = 4.5). A real computed score clusters naturally — with a large
+  // catalog many products legitimately share e.g. 4.1★ — so only flag when a single rating covers
+  // an implausibly large share of all rated products, not just any value with ≥PLACEHOLDER_RATING_MIN.
+  const totalRated = Object.values(ratingCounts).reduce((a, b) => a + b, 0)
   for (const [val, count] of Object.entries(ratingCounts)) {
-    if (count >= PLACEHOLDER_RATING_MIN) {
-      add('ERROR', 'placeholder-rating', `${count} products all rated exactly ${val} — looks like a fabricated placeholder, not a computed score`)
+    if (count >= PLACEHOLDER_RATING_MIN && count / totalRated > 0.4) {
+      add('ERROR', 'placeholder-rating', `${count}/${totalRated} products rated exactly ${val} (${Math.round((count / totalRated) * 100)}%) — looks like a fabricated placeholder, not a computed score`)
     }
   }
   if (missingPriceOnPick > 0) {

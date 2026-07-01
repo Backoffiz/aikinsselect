@@ -9,6 +9,7 @@ import { ProductCard } from '@/components/product-card'
 import { SaveHeartButton } from '@/components/saved/save-heart-button'
 import { StickyBuyBar } from '@/components/product/sticky-buy-bar'
 import { Star, ChevronRight, ArrowRight, Award } from 'lucide-react'
+import { Reveal } from '@/components/ui/reveal'
 import {
   getProductBySlug,
   getAlternativeProducts,
@@ -149,7 +150,7 @@ export default async function ProductPage({ params }: Props) {
             {/* LEFT */}
             <div className="min-w-0">
               {product.is_best_pick === 1 && (
-                <span className="mb-4 inline-flex items-center gap-1.5 rounded-[2px] bg-brand px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-white">
+                <span className="mb-4 inline-flex items-center gap-1.5 rounded-md bg-brand px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.06em] text-white shadow-xs">
                   <Award className="h-3.5 w-3.5" /> Best Overall
                 </span>
               )}
@@ -182,7 +183,7 @@ export default async function ProductPage({ params }: Props) {
               </div>
 
               {/* Main image */}
-              <div className="mt-6 flex h-[360px] items-center justify-center rounded-[4px] border border-card-edge bg-white p-8 md:h-[420px]">
+              <div className="mt-6 flex h-[360px] items-center justify-center rounded-xl border border-card-edge bg-white p-8 shadow-card md:h-[420px]">
                 {product.image_url ? (
                   <img src={product.image_url} alt={product.name} className="max-h-full max-w-full object-contain" />
                 ) : (
@@ -210,7 +211,7 @@ export default async function ProductPage({ params }: Props) {
               {(pros.length > 0 || cons.length > 0) && (
                 <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
                   {pros.length > 0 && (
-                    <div className="rounded-[4px] border border-[#CFE6D8] bg-[#F1F7F3] p-6">
+                    <div className="rounded-xl border border-[#CFE6D8] bg-[#F1F7F3] p-6">
                       <div className="mb-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-brand">What we love</div>
                       <ul className="space-y-2.5">
                         {pros.map((p, i) => (
@@ -223,7 +224,7 @@ export default async function ProductPage({ params }: Props) {
                     </div>
                   )}
                   {cons.length > 0 && (
-                    <div className="rounded-[4px] border border-[#ECD4CB] bg-[#FBF4F1] p-6">
+                    <div className="rounded-xl border border-[#ECD4CB] bg-[#FBF4F1] p-6">
                       <div className="mb-3 text-[12px] font-extrabold uppercase tracking-[0.08em] text-[#B45309]">Worth noting</div>
                       <ul className="space-y-2.5">
                         {cons.map((c, i) => (
@@ -255,7 +256,7 @@ export default async function ProductPage({ params }: Props) {
 
             {/* RIGHT — sticky buy box */}
             <div className="lg:sticky lg:top-24">
-              <div className="overflow-hidden rounded-[6px] border border-card-edge bg-white shadow-card-hover">
+              <div className="overflow-hidden rounded-2xl border border-card-edge bg-white shadow-card-lift">
                 <div className="border-b border-hairline px-6 py-5">
                   <div className="text-xs text-faint">Best price right now</div>
                   <div className="mt-1 font-serif text-[38px] font-semibold tabular-nums text-ink">{priceStr}</div>
@@ -266,7 +267,7 @@ export default async function ProductPage({ params }: Props) {
                       href={buyUrl}
                       target="_blank"
                       rel="noopener sponsored"
-                      className="mb-2.5 block rounded-[3px] bg-brand py-4 text-center text-base font-bold text-white transition-colors hover:bg-brand-hover"
+                      className="mb-2.5 block rounded-lg bg-brand py-4 text-center text-base font-bold text-white shadow-brand-cta transition-colors hover:bg-brand-hover"
                     >
                       Check price at Amazon →
                     </a>
@@ -300,7 +301,7 @@ export default async function ProductPage({ params }: Props) {
 
               {/* Specs */}
               {specs.length > 0 && (
-                <div className="mt-4 rounded-[6px] border border-card-edge bg-white p-6">
+                <div className="mt-4 rounded-xl border border-card-edge bg-white p-6 shadow-card">
                   <div className="mb-3 text-[12px] font-bold uppercase tracking-[0.06em] text-faint">At a glance</div>
                   {specs.map((s, i) => (
                     <div key={i} className="flex justify-between border-b border-hairline py-2.5 text-[13.5px] last:border-0">
@@ -316,9 +317,13 @@ export default async function ProductPage({ params }: Props) {
           {/* Alternatives */}
           {alternatives.length > 0 && (
             <section className="mt-16 border-t border-card-edge pt-10">
-              <h2 className="font-serif text-2xl font-medium text-ink">Also worth considering</h2>
+              <p className="mb-2.5 inline-flex items-center gap-2.5 text-[11px] font-bold uppercase tracking-[0.16em] text-brand">
+                <span className="h-px w-6 bg-brand/50" />
+                More options
+              </p>
+              <h2 className="font-serif text-2xl font-medium tracking-tight text-ink">Also worth considering</h2>
               <p className="mt-1 text-sm text-faint">Other top picks in {product.category_name}</p>
-              <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              <Reveal stagger className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {alternatives.map((alt: any) => (
                   <ProductCard
                     key={alt.id}
@@ -333,7 +338,7 @@ export default async function ProductPage({ params }: Props) {
                     affiliateUrl={alt.affiliate_url}
                   />
                 ))}
-              </div>
+              </Reveal>
             </section>
           )}
         </div>

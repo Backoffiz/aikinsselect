@@ -36,7 +36,7 @@ function SearchForm({ query }: { query: string }) {
             defaultValue={query}
             autoFocus={!query}
             placeholder="Search products, brands, categories, or reviews…"
-            className="w-full rounded-[3px] border border-input bg-white py-3 pl-10 pr-4 text-sm text-ink placeholder:text-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+            className="w-full rounded-lg border border-input bg-white py-3 pl-10 pr-4 text-sm text-ink shadow-xs placeholder:text-faint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           />
         </div>
         <Button type="submit" size="lg" className="shrink-0">
@@ -55,7 +55,7 @@ function CategoryPills({ categories }: { categories: any[] }) {
         <Link
           key={c.id}
           href={`/categories/${c.slug}`}
-          className="inline-flex items-center gap-2 rounded-pill border border-card-edge bg-white px-4 py-2 text-sm font-semibold text-ink transition-colors hover:border-ink"
+          className="inline-flex items-center gap-2 rounded-pill border border-card-edge bg-white px-4 py-2 text-sm font-semibold text-ink shadow-xs transition-all hover:-translate-y-0.5 hover:border-brand hover:text-brand"
         >
           {c.icon && <span aria-hidden>{c.icon}</span>}
           {c.name}
@@ -164,12 +164,12 @@ export default async function SearchPage({ searchParams }: Props) {
                 <Link
                   key={review.id}
                   href={`/reviews/${review.slug}`}
-                  className="block rounded-[5px] border border-card-edge bg-white p-4 transition-all hover:shadow-card-hover"
+                  className="group block rounded-xl border border-card-edge bg-white p-4 shadow-card transition-all duration-300 hover:-translate-y-0.5 hover:shadow-card-hover"
                 >
                   <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wider text-brand">
                     {review.category_name || 'Review'}
                   </div>
-                  <h3 className="font-serif text-lg font-medium text-ink">{review.title}</h3>
+                  <h3 className="font-serif text-lg font-medium text-ink transition-colors group-hover:text-brand">{review.title}</h3>
                   {review.subtitle && <p className="mt-1 text-sm leading-relaxed text-muted-ink">{review.subtitle}</p>}
                 </Link>
               ))}
@@ -197,7 +197,7 @@ async function NoResults({ query }: { query: string }) {
   const [categories, picks] = await Promise.all([getCategories(), getBestPicks(6)])
   return (
     <div>
-      <div className="rounded-[6px] border border-card-edge bg-white px-6 py-10 text-center">
+      <div className="rounded-xl border border-card-edge bg-white px-6 py-10 text-center shadow-card">
         <p className="text-lg text-ink">No results found for &ldquo;{query}&rdquo;</p>
         <p className="mx-auto mt-2 max-w-md text-sm text-muted-ink">
           Try fewer or more general words (e.g. &ldquo;headphones&rdquo; instead of a model number), check the spelling,

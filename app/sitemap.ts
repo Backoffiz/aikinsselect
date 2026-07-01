@@ -2,9 +2,10 @@ export const runtime = 'edge'
 
 import type { MetadataRoute } from 'next'
 import { getPublishedReviews, getCategories, getLatestProducts } from '@/lib/db'
+import { SITE_URL } from '@/lib/seo'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://aikinsselect.com'
+  const baseUrl = SITE_URL
 
   // Static pages
   const staticPages: MetadataRoute.Sitemap = [
