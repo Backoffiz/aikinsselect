@@ -1,0 +1,101 @@
+name: SEO
+
+# SEO regression monitoring. Propose-only: this workflow never edits code or the site — it
+# gates pull requests and, for live checks, files/updates a GitHub issue for a human to action.
+#
+#   - pull_request        → source lint (fast, no infra): catches SEO regressions in source
+#                           before they ship (lost canonical, accidental noindex, dropped JSON-LD).
+#   - push to main        → runtime crawl of production after the Cloudflare Pages deploy settles.
+#   - nightly (schedule)  → runtime crawl + Google Search Console report (the real ranking signal).
+#   - workflow_dispatch   → run on demand, optionally against a preview URL.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '17 6 * * *' # 06:17 UTC nightly
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'URL to crawl (defaults to production)'
+        required: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  # PR gate — deterministic, no network/DB/build. Blocks a merge that regresses on-page SEO.
+  source-lint:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/seo-lint-source.mjs
+
+  # Live checks — post-deploy + nightly. Crawls the rendered site and (nightly) pulls GSC.
+  live-check:
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      # Give Cloudflare Pages time to finish the production deploy before we crawl it.
+      - name: Wait for deploy to settle
+        if: github.event_name == 'push'
+        run: sleep 90
+
+      - name: Runtime SEO crawl
+        run: node scripts/seo-check.mjs "${{ github.event.inputs.target }}" | tee seo-report.txt
+
+      # Google Search Console — nightly / on demand. Inert (exits 0) if the secrets aren't set,
+      # so this never fails the run before the Google-side setup is complete.
+      - name: Search Console report
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        continue-on-error: true
+        env:
+          GSC_PROPERTY: ${{ secrets.GSC_PROPERTY }}
+          GSC_SERVICE_ACCOUNT_KEY: ${{ secrets.GSC_SERVICE_ACCOUNT_KEY }}
+        run: node scripts/gsc-report.mjs | tee -a seo-report.txt
+
+      # Propose-only: on a regression, open (or update) a tracking issue for a human to review.
+      - name: File / update regression issue
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs')
+            let report = ''
+            try { report = fs.readFileSync('seo-report.txt', 'utf8') } catch {}
+            const marker = '<!-- seo-regression-bot -->'
+            const sha = context.sha.slice(0, 7)
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`
+            const body = [
+              marker,
+              `The automated SEO check failed on \`${sha}\` (${context.eventName}).`,
+              '',
+              '```',
+              report.slice(-6000),
+              '```',
+              '',
+              '_Propose-only: this is a task for a human to review — the check never edits code or the site._',
+              `[View workflow run](${runUrl})`,
+            ].join('\n')
+            const title = '🔎 SEO regression detected'
+            const { data: open } = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo, state: 'open', labels: 'seo-regression',
+            })
+            const existing = open.find((i) => i.body && i.body.includes(marker))
+            if (existing) {
+              await github.rest.issues.update({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body })
+              await github.rest.issues.createComment({ owner: context.repo.owner, repo: context.repo.repo, issue_number: existing.number, body: `Still failing on \`${sha}\` — [run](${runUrl}).` })
+            } else {
+              await github.rest.issues.create({ owner: context.repo.owner, repo: context.repo.repo, title, body, labels: ['seo-regression'] })
+            }

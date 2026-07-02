@@ -19,6 +19,11 @@ yarn-error.log*
 # env files
 .env*
 
+# Google service-account key for the SEO / Search Console report (see docs/SEO-MONITORING.md).
+# The key is a secret — provide it via .env.local or a CI secret, never commit it.
+*.gsc-key.json
+.gsc-key.json
+
 # vercel
 .vercel
 

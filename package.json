@@ -10,7 +10,10 @@
     "dev": "next dev",
     "lint": "eslint .",
     "start": "next start",
-    "validate-catalog": "node scripts/validate-catalog.mjs"
+    "validate-catalog": "node scripts/validate-catalog.mjs",
+    "seo:lint": "node scripts/seo-lint-source.mjs",
+    "seo:check": "node scripts/seo-check.mjs",
+    "seo:gsc": "node scripts/gsc-report.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
