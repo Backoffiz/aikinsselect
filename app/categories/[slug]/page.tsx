@@ -117,7 +117,7 @@ export default async function CategoryPage({ params }: Props) {
                     title={product.name}
                     category={category.name}
                     image={product.image_url}
-                    rating={product.rating || 4.5}
+                    rating={product.rating}
                     price={product.price ? `$${Number(product.price).toFixed(2)}` : 'Check price'}
                     bestPick
                     affiliateUrl={product.affiliate_url}
@@ -140,7 +140,7 @@ export default async function CategoryPage({ params }: Props) {
                     title={product.name}
                     category={category.name}
                     image={product.image_url}
-                    rating={product.rating || 4.5}
+                    rating={product.rating}
                     price={product.price ? `$${Number(product.price).toFixed(2)}` : 'Check price'}
                     affiliateUrl={product.affiliate_url}
                   />

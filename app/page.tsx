@@ -210,7 +210,7 @@ export default async function HomePage() {
                   title={product.name}
                   category={product.category_name || "Products"}
                   image={product.image_url || "/placeholder.svg?height=300&width=300"}
-                  rating={product.rating || 4.5}
+                  rating={product.rating}
                   price={product.price ? `$${Number(product.price).toFixed(2)}` : "Check price"}
                   bestPick={product.is_best_pick === 1}
                   affiliateUrl={product.affiliate_url}

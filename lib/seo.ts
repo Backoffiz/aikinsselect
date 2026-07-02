@@ -13,6 +13,7 @@ export const SITE_NAME = 'Aikins Select'
 
 const ORG_ID = `${SITE_URL}/#organization`
 const WEBSITE_ID = `${SITE_URL}/#website`
+const EDITORIAL_ID = `${SITE_URL}/#editorial-team`
 
 /** Resolve a relative path (or pass through an already-absolute URL) to absolute. */
 export function absoluteUrl(path?: string | null): string | undefined {
@@ -36,8 +37,36 @@ export function organizationNode() {
     name: SITE_NAME,
     url: SITE_URL,
     logo: { '@type': 'ImageObject', url: `${SITE_URL}/icon.svg` },
+    email: 'hello@aikinsselect.com',
+    foundingDate: '2026',
     description:
       'Independent product reviews. We cross-reference trusted expert reviews and real user feedback to find the products that actually deliver.',
+    // Honest E-E-A-T signals only — the topics we actually publish on. We deliberately
+    // omit sameAs (no verified social profiles yet) rather than link placeholders.
+    knowsAbout: [
+      'Consumer technology', 'Home appliances', 'Kitchen appliances', 'Fitness equipment',
+      'Beauty tools', 'Travel gear', 'Pet products', 'Office equipment', 'Gaming gear',
+      'Outdoor gear', 'Baby products', 'Automotive accessories',
+    ],
+    // The published, transparent method behind every recommendation.
+    publishingPrinciples: `${SITE_URL}/how-we-review`,
+  }
+}
+
+/**
+ * The editorial team credited as the author of our buying guides — an Organization
+ * sub-entity of the site (honest: we credit the team, not an invented individual byline)
+ * whose "about" is the published /how-we-review methodology. A named, linkable author is a
+ * stronger E-E-A-T signal than organizational authorship alone. Reference by @id from
+ * articleNode({ author }); include this node in the same graph so the @id resolves.
+ */
+export function editorialTeamNode() {
+  return {
+    '@type': 'Organization',
+    '@id': EDITORIAL_ID,
+    name: `${SITE_NAME} Editorial Team`,
+    url: `${SITE_URL}/how-we-review`,
+    parentOrganization: { '@id': ORG_ID },
   }
 }
 
@@ -145,4 +174,45 @@ export function itemListNode(products: any[], opts: { name: string; url: string 
       item: productNode(p),
     })),
   }
+}
+
+/** Coerce a D1 datetime ('YYYY-MM-DD HH:MM:SS') or ISO string to an ISO string, or undefined. */
+export function toIso(value?: string | null): string | undefined {
+  if (!value) return undefined
+  const d = new Date(value.includes('T') ? value : value.replace(' ', 'T') + 'Z')
+  return isNaN(d.getTime()) ? undefined : d.toISOString()
+}
+
+/**
+ * An Article node for a buying guide. Carries organizational authorship + publish/
+ * modified dates — the E-E-A-T + freshness signals — without fabricating any rating
+ * (product-level ratings live in the ItemList's Product/Review nodes). author &
+ * publisher reference the Organization node (@id), so include organizationNode() too.
+ */
+export function articleNode(opts: {
+  headline: string
+  description?: string | null
+  url: string
+  datePublished?: string | null
+  dateModified?: string | null
+  image?: string | null
+  section?: string | null
+}) {
+  const node: Record<string, any> = {
+    '@type': 'Article',
+    headline: opts.headline,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(opts.url) },
+    author: { '@id': EDITORIAL_ID },
+    publisher: { '@id': ORG_ID },
+  }
+  if (opts.description) node.description = opts.description
+  const img = absoluteUrl(opts.image)
+  if (img) node.image = img
+  if (opts.section) node.articleSection = opts.section
+  const published = toIso(opts.datePublished)
+  const modified = toIso(opts.dateModified)
+  if (published) node.datePublished = published
+  // Freshness: fall back to datePublished so dateModified is always present when we have a date.
+  if (modified || published) node.dateModified = modified || published
+  return node
 }

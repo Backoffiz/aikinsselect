@@ -47,7 +47,7 @@ export function SiteFooter() {
             <h3 className="text-sm font-semibold uppercase tracking-wide text-paper">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li><Link href="/reviews" className="text-paper/70 transition-colors hover:text-brand-on-dark">Reviews</Link></li>
-              <li><Link href="/about" className="text-paper/70 transition-colors hover:text-brand-on-dark">How we review</Link></li>
+              <li><Link href="/how-we-review" className="text-paper/70 transition-colors hover:text-brand-on-dark">How we review</Link></li>
               {FEATURES.saved && (
                 <li><Link href="/saved" className="text-paper/70 transition-colors hover:text-brand-on-dark">Saved items</Link></li>
               )}
