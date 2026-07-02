@@ -334,7 +334,7 @@ export default async function ProductPage({ params }: Props) {
                     title={alt.name}
                     category={alt.category_name || product.category_name}
                     image={alt.image_url}
-                    rating={alt.rating || 4.5}
+                    rating={alt.rating}
                     price={alt.price ? `$${Number(alt.price).toFixed(2)}` : 'Check price'}
                     bestPick={alt.is_best_pick === 1}
                     affiliateUrl={alt.affiliate_url}

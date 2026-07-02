@@ -13,6 +13,7 @@ export const SITE_NAME = 'Aikins Select'
 
 const ORG_ID = `${SITE_URL}/#organization`
 const WEBSITE_ID = `${SITE_URL}/#website`
+const EDITORIAL_ID = `${SITE_URL}/#editorial-team`
 
 /** Resolve a relative path (or pass through an already-absolute URL) to absolute. */
 export function absoluteUrl(path?: string | null): string | undefined {
@@ -49,6 +50,23 @@ export function organizationNode() {
     ],
     // The published, transparent method behind every recommendation.
     publishingPrinciples: `${SITE_URL}/how-we-review`,
+  }
+}
+
+/**
+ * The editorial team credited as the author of our buying guides — an Organization
+ * sub-entity of the site (honest: we credit the team, not an invented individual byline)
+ * whose "about" is the published /how-we-review methodology. A named, linkable author is a
+ * stronger E-E-A-T signal than organizational authorship alone. Reference by @id from
+ * articleNode({ author }); include this node in the same graph so the @id resolves.
+ */
+export function editorialTeamNode() {
+  return {
+    '@type': 'Organization',
+    '@id': EDITORIAL_ID,
+    name: `${SITE_NAME} Editorial Team`,
+    url: `${SITE_URL}/how-we-review`,
+    parentOrganization: { '@id': ORG_ID },
   }
 }
 
@@ -184,7 +202,7 @@ export function articleNode(opts: {
     '@type': 'Article',
     headline: opts.headline,
     mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(opts.url) },
-    author: { '@id': ORG_ID },
+    author: { '@id': EDITORIAL_ID },
     publisher: { '@id': ORG_ID },
   }
   if (opts.description) node.description = opts.description

@@ -79,7 +79,7 @@ function ProductGrid({ products }: { products: any[] }) {
           title={product.name}
           category={product.category_name}
           image={product.image_url}
-          rating={product.rating || 4.5}
+          rating={product.rating}
           price={product.price ? `$${Number(product.price).toFixed(2)}` : 'Check price'}
           affiliateUrl={product.affiliate_url}
           bestPick={product.is_best_pick === 1}

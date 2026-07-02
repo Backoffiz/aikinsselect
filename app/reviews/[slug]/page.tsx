@@ -14,7 +14,7 @@ import { FEATURES } from "@/lib/flags"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { JsonLd } from "@/components/seo/json-ld"
-import { jsonLdGraph, organizationNode, breadcrumbNode, itemListNode, articleNode, SITE_URL } from "@/lib/seo"
+import { jsonLdGraph, organizationNode, editorialTeamNode, breadcrumbNode, itemListNode, articleNode, SITE_URL, SITE_NAME } from "@/lib/seo"
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -191,6 +191,7 @@ export default async function ReviewPage({ params }: Props) {
 
   const structuredData = jsonLdGraph([
     organizationNode(),
+    editorialTeamNode(),
     breadcrumbNode(breadcrumbItems),
     // Article node carries organizational authorship + publish/modified dates (E-E-A-T + freshness).
     articleNode({
@@ -244,10 +245,10 @@ export default async function ReviewPage({ params }: Props) {
                   </p>
                 )}
                 <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 text-[13px] font-medium text-faint">
-                  <span className="flex items-center gap-2">
+                  <Link href="/how-we-review" className="flex items-center gap-2 transition-colors hover:text-brand">
                     <span className="h-1.5 w-1.5 rounded-full bg-brand"></span>
-                    Researched &amp; reviewed
-                  </span>
+                    By the {SITE_NAME} Editorial Team
+                  </Link>
                   <span className="flex items-center gap-2">
                     <span className="h-1.5 w-1.5 rounded-full bg-brand"></span>
                     {products.length} products compared
